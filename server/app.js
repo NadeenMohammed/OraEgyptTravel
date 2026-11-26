@@ -6,6 +6,7 @@ import multer from 'multer';
 import nodemailer from 'nodemailer';
 import path from 'node:path';
 import fs from 'node:fs';
+import os from 'node:os';
 import { prisma } from './prisma.js';
 import { requireAdmin, signAdminToken } from './auth.js';
 
@@ -13,7 +14,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '4mb' }));
 
-const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads');
+const uploadsDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'ora-travel-uploads')
+  : path.resolve(process.cwd(), 'public', 'uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
 app.use('/uploads', express.static(uploadsDir));
 
