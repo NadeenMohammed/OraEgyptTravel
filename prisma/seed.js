@@ -35,6 +35,7 @@ async function main() {
         description: dest.description,
         image: dest.image,
         experiences: JSON.stringify(dest.experiences),
+        translations: '{}',
       },
     });
   }
@@ -62,6 +63,7 @@ async function main() {
         included: JSON.stringify(tour.included),
         excluded: JSON.stringify(tour.excluded),
         travelInfo: tour.travelInfo || '',
+        translations: '{}',
       },
     });
   }
@@ -79,6 +81,7 @@ async function main() {
         excerpt: post.excerpt,
         content: JSON.stringify(post.content),
         published: true,
+        translations: '{}',
       },
     });
   }

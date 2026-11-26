@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ model Tour {
   slug          String   @unique
   title         String
   destination   String
-  destinations  String   // JSON array of destination names
+  destinations  String   @db.LongText // JSON array of destination names
   durationDays  Int
   durationLabel String
   category      String
@@ -30,14 +30,14 @@ model Tour {
   priceDisplay  String   @default("Tailored Quote / Price on Request")
   featured      Boolean  @default(false)
   image         String
-  gallery       String   // JSON array of image URLs
-  overview      String
-  highlights    String   // JSON array of strings
-  itinerary     String   // JSON array of { day, title, description }
-  included      String   // JSON array of strings
-  excluded      String   // JSON array of strings
-  travelInfo    String   @default("")
-  translations  String   @default("{}")
+  gallery       String   @db.LongText // JSON array of image URLs
+  overview      String   @db.LongText
+  highlights    String   @db.LongText // JSON array of strings
+  itinerary     String   @db.LongText // JSON array of { day, title, description }
+  included      String   @db.LongText // JSON array of strings
+  excluded      String   @db.LongText // JSON array of strings
+  travelInfo    String   @db.Text
+  translations  String   @db.LongText
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -48,10 +48,10 @@ model Destination {
   name        String
   region      String
   tagline     String
-  description String
+  description String   @db.LongText
   image       String
-  experiences String   // JSON array of strings
-  translations String   @default("{}")
+  experiences String   @db.LongText // JSON array of strings
+  translations String   @db.LongText
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -63,10 +63,10 @@ model BlogPost {
   category  String
   readTime  String   @default("5 min read")
   image     String
-  excerpt   String
-  content   String   // JSON array of paragraphs
+  excerpt   String   @db.Text
+  content   String   @db.LongText // JSON array of paragraphs
   published Boolean  @default(true)
-  translations String   @default("{}")
+  translations String   @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -80,10 +80,10 @@ model BookingInquiry {
   guests     String   @default("2")
   tourSlug   String   @default("")
   tourTitle  String   @default("")
-  notes      String   @default("")
+  notes      String   @db.Text
   status     String   @default("NEW") // NEW | CONTACTED | QUOTED | CONFIRMED | ARCHIVED
-  adminNotes String   @default("")
-  replyMessage String @default("")
+  adminNotes String   @db.Text
+  replyMessage String @db.Text
   repliedAt    DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -95,10 +95,10 @@ model ContactMessage {
   email      String
   phone      String   @default("")
   subject    String   @default("General Inquiry")
-  message    String
+  message    String   @db.Text
   status     String   @default("NEW") // NEW | READ | REPLIED | ARCHIVED
-  adminNotes String   @default("")
-  replyMessage String @default("")
+  adminNotes String   @db.Text
+  replyMessage String @db.Text
   repliedAt    DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -114,6 +114,6 @@ model NewsletterSubscriber {
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String
+  value     String   @db.LongText
   updatedAt DateTime @updatedAt
 }

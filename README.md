@@ -1,6 +1,6 @@
 # ORA TRAVEL — Full-Stack React + Prisma + Admin Dashboard
 
-A complete international luxury travel platform for **ORA TRAVEL** built with **React 18, Vite, Tailwind CSS, Framer Motion, Express API, and Prisma ORM (PostgreSQL)**, featuring a **standalone `/admin` dashboard**.
+A complete international luxury travel platform for **ORA TRAVEL** built with **React 18, Vite, Tailwind CSS, Framer Motion, Express API, and Prisma ORM (MySQL-compatible databases)**, featuring a **standalone `/admin` dashboard**.
 
 ## Features Included
 - **Official Brand Identity:** Uses your uploaded ORA TRAVEL logo (`/public/logo.png`, `/public/favicon.png`) and extracted brand colors (`#102355` Royal Navy, `#D2A058` Solar Gold, `#B88346` Warm Bronze, `#FAF8F4` Ivory Cream).
@@ -23,7 +23,7 @@ A complete international luxury travel platform for **ORA TRAVEL** built with **
    ```bash
    npm install
    ```
-2. Copy `.env.example` to `.env` and add your PostgreSQL `DATABASE_URL` (you can get a free PostgreSQL database from [Neon](https://neon.tech) or [Supabase](https://supabase.com)):
+2. Copy `.env.example` to `.env` and set `DATABASE_URL` to valid credentials for a MySQL-compatible database (such as MySQL or TiDB):
    ```bash
    cp .env.example .env
    ```

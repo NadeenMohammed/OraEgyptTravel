@@ -155,6 +155,8 @@ app.post('/api/forms/booking', async (req, res) => {
         tourSlug: (tourSlug || '').trim(),
         tourTitle: (tourTitle || '').trim(),
         notes: (notes || '').trim(),
+        adminNotes: '',
+        replyMessage: '',
       },
     });
     res.status(201).json({ success: true, id: record.id, record });
@@ -176,6 +178,8 @@ app.post('/api/forms/contact', async (req, res) => {
         phone: (phone || '').trim(),
         subject: (subject || 'General Inquiry').trim(),
         message: message.trim(),
+        adminNotes: '',
+        replyMessage: '',
       },
     });
     res.status(201).json({ success: true, id: record.id, record });
