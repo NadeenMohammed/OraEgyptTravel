@@ -1,0 +1,1712 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  CalendarCheck2,
+  Mail,
+  Users,
+  Compass,
+  MapPin,
+  FileText,
+  Settings,
+  LogOut,
+  Plus,
+  Trash2,
+  Pencil,
+  Download,
+  ExternalLink,
+  RefreshCw,
+  CheckCircle2,
+  Lock,
+  Eye,
+  Send,
+} from 'lucide-react';
+import {
+  adminApi,
+  fetchTours,
+  fetchDestinations,
+  fetchBlogPosts,
+  fetchSiteSettings,
+  getAdminToken,
+  setAdminToken,
+  uploadAdminImage,
+} from '../services/api';
+import { OraBrandLogo } from '../components/OraBrandLogo';
+import { useLanguage } from '../i18n';
+
+const STATUS_BADGE = {
+  NEW: 'bg-amber-100 text-amber-800 border-amber-300',
+  CONTACTED: 'bg-blue-100 text-blue-800 border-blue-300',
+  QUOTED: 'bg-indigo-100 text-indigo-800 border-indigo-300',
+  CONFIRMED: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+  READ: 'bg-blue-100 text-blue-800 border-blue-300',
+  REPLIED: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+  ARCHIVED: 'bg-slate-100 text-slate-600 border-slate-300',
+};
+
+function exportCsv(filename, rows) {
+  if (!rows.length) return;
+  const keys = Object.keys(rows[0]);
+  const csv = [
+    keys.join(','),
+    ...rows.map((row) =>
+      keys
+        .map((k) => `"${String(row[k] ?? '').replace(/"/g, '""')}"`)
+        .join(',')
+    ),
+  ].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export function AdminApp() {
+  const {
+    language,
+    setLanguage,
+    languages,
+    setLanguages,
+    setShowLanguageSwitcher,
+  } = useLanguage();
+  const [admin, setAdmin] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [loginEmail, setLoginEmail] = useState('admin@oraegypttravel.com');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const [tab, setTab] = useState('overview');
+  const [stats, setStats] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [subscribers, setSubscribers] = useState([]);
+  const [tours, setTours] = useState([]);
+  const [destinations, setDestinations] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [settings, setSettings] = useState({
+    email: '',
+    phone: '',
+    whatsapp: '',
+    address: '',
+    instagram: '',
+    facebook: '',
+    showLanguageSwitcher: true,
+  });
+  const [toast, setToast] = useState('');
+  const [submissionDetail, setSubmissionDetail] = useState(null);
+  const [replyDraft, setReplyDraft] = useState('');
+  const [translationModal, setTranslationModal] = useState(null);
+  const [newLanguageCode, setNewLanguageCode] = useState('');
+  const [newLanguageLabel, setNewLanguageLabel] = useState('');
+
+  // Modal/form states for Tours, Destinations, Blog
+  const [tourForm, setTourForm] = useState(null);
+  const [destForm, setDestForm] = useState(null);
+  const [blogForm, setBlogForm] = useState(null);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3200);
+  };
+
+  const loadAll = useCallback(async () => {
+    try {
+      const [st, bk, ct, sub, tr, ds, bl, cfg] = await Promise.all([
+        adminApi.stats(),
+        adminApi.getBookings(),
+        adminApi.getContacts(),
+        adminApi.getSubscribers(),
+        fetchTours(),
+        fetchDestinations(),
+        fetchBlogPosts(),
+        fetchSiteSettings(),
+      ]);
+      setStats(st);
+      setBookings(bk);
+      setContacts(ct);
+      setSubscribers(sub);
+      setTours(tr);
+      setDestinations(ds);
+      setPosts(bl);
+      setSettings((prev) => ({
+        ...prev,
+        ...cfg,
+        showLanguageSwitcher:
+          cfg.showLanguageSwitcher === undefined
+            ? prev.showLanguageSwitcher
+            : cfg.showLanguageSwitcher !== 'false' && cfg.showLanguageSwitcher !== false,
+      }));
+      if (cfg.languages) {
+        try {
+          setLanguages(JSON.parse(cfg.languages));
+        } catch {
+          showToast('Saved language settings are invalid JSON');
+        }
+      }
+      if (cfg.showLanguageSwitcher !== undefined) {
+        setShowLanguageSwitcher(cfg.showLanguageSwitcher !== 'false' && cfg.showLanguageSwitcher !== false);
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to refresh dashboard data');
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = getAdminToken();
+    if (!token) {
+      setCheckingAuth(false);
+      return;
+    }
+    adminApi
+      .me()
+      .then((res) => {
+        setAdmin(res.admin);
+        loadAll();
+      })
+      .catch(() => {
+        setAdminToken('');
+        setAdmin(null);
+      })
+      .finally(() => setCheckingAuth(false));
+  }, [loadAll]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginLoading(true);
+    try {
+      const res = await adminApi.login(loginEmail, loginPassword);
+      setAdminToken(res.token);
+      setAdmin(res.admin);
+      await loadAll();
+    } catch (err) {
+      setLoginError(err.message || 'Invalid credentials');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setAdminToken('');
+    setAdmin(null);
+  };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-[#0A1638] text-white flex items-center justify-center">
+        Verifying admin session...
+      </div>
+    );
+  }
+
+  // ================= STANDALONE LOGIN SCREEN =================
+  if (!admin) {
+    return (
+      <div className="min-h-screen bg-[#0A1638] flex items-center justify-center p-5">
+        <div className="w-full max-w-md bg-white rounded-sm shadow-2xl p-8 border-t-4 border-[#D2A058]">
+          <div className="flex justify-center mb-6">
+            <OraBrandLogo variant="full" />
+          </div>
+          <div className="text-center mb-6">
+            <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.22em] text-[#B88346] font-bold">
+              <Lock size={13} /> Admin Portal
+            </span>
+            <h1 className="mt-1 font-serif text-2xl text-[#102355]">Sign In to Dashboard</h1>
+          </div>
+
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs uppercase tracking-[0.14em] text-[#102355]/75 mb-1.5 font-semibold">
+                Admin Email
+              </label>
+              <input
+                type="email"
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-[#D2A058]/50 rounded-sm text-sm focus:outline-none focus:border-[#102355]"
+              />
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-[0.14em] text-[#102355]/75 mb-1.5 font-semibold">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-3.5 py-2.5 border border-[#D2A058]/50 rounded-sm text-sm focus:outline-none focus:border-[#102355]"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loginLoading}
+              className="w-full py-3 bg-[#102355] text-white text-xs uppercase tracking-[0.2em] font-bold rounded-sm hover:bg-[#1B367A] transition-colors disabled:opacity-60"
+            >
+              {loginLoading ? 'Signing In...' : 'Enter Admin Dashboard'}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-4 border-t border-[#EFE4D0] text-center">
+            <Link to="/" className="text-xs text-[#102355]/70 hover:text-[#D2A058]">
+              ← Return to Public Website
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ================= HANDLERS FOR CRUD =================
+  const saveTour = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...tourForm,
+        durationDays: Number(tourForm.durationDays) || 1,
+        destinations: tourForm.destinationsText.split(',').map((s) => s.trim()).filter(Boolean),
+        highlights: tourForm.highlightsText.split('\n').map((s) => s.trim()).filter(Boolean),
+        included: tourForm.includedText.split('\n').map((s) => s.trim()).filter(Boolean),
+        excluded: tourForm.excludedText.split('\n').map((s) => s.trim()).filter(Boolean),
+        gallery: (tourForm.galleryText || '').split('\n').map((s) => s.trim()).filter(Boolean),
+        translations: (() => { try { return JSON.parse(tourForm.translationsText || '{}'); } catch { return {}; } })(),
+      };
+      if (tourForm.dbId) {
+        await adminApi.updateTour(tourForm.dbId, payload);
+        showToast('Tour updated successfully');
+      } else {
+        await adminApi.createTour(payload);
+        showToast('New tour created');
+      }
+      setTourForm(null);
+      loadAll();
+    } catch (err) {
+      showToast(err.message);
+    }
+  };
+
+  const saveDestination = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...destForm,
+        experiences: destForm.experiencesText.split(',').map((s) => s.trim()).filter(Boolean),
+        translations: (() => { try { return JSON.parse(destForm.translationsText || '{}'); } catch { return {}; } })(),
+      };
+      if (destForm.dbId) {
+        await adminApi.updateDestination(destForm.dbId, payload);
+        showToast('Destination updated');
+      } else {
+        await adminApi.createDestination(payload);
+        showToast('New destination added');
+      }
+      setDestForm(null);
+      loadAll();
+    } catch (err) {
+      showToast(err.message);
+    }
+  };
+
+  const saveBlog = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...blogForm,
+        content: blogForm.contentText.split('\n\n').map((s) => s.trim()).filter(Boolean),
+        translations: (() => { try { return JSON.parse(blogForm.translationsText || '{}'); } catch { return {}; } })(),
+      };
+      if (blogForm.dbId) {
+        await adminApi.updateBlog(blogForm.dbId, payload);
+        showToast('Article updated');
+      } else {
+        await adminApi.createBlog(payload);
+        showToast('New article published');
+      }
+      setBlogForm(null);
+      loadAll();
+    } catch (err) {
+      showToast(err.message);
+    }
+  };
+
+  const saveSettings = async (e) => {
+    e.preventDefault();
+    try {
+      const saved = await adminApi.updateSettings({
+        ...settings,
+        languages: JSON.stringify(languages),
+        showLanguageSwitcher: String(
+          settings.showLanguageSwitcher !== false && settings.showLanguageSwitcher !== 'false'
+        ),
+      });
+      const nextLanguages = (() => {
+        try {
+          return JSON.parse(saved.languages);
+        } catch {
+          return languages;
+        }
+      })();
+      setLanguages(nextLanguages);
+      localStorage.setItem('ora_languages', JSON.stringify(nextLanguages));
+      const showSwitcher = saved.showLanguageSwitcher !== 'false' && saved.showLanguageSwitcher !== false;
+      setShowLanguageSwitcher(showSwitcher);
+      localStorage.setItem('ora_show_language_switcher', String(showSwitcher));
+      showToast('Site settings saved to database');
+    } catch (err) {
+      showToast(err.message);
+    }
+  };
+
+  const addLanguage = () => {
+    const code = newLanguageCode.trim();
+    const label = newLanguageLabel.trim();
+    if (!/^[a-z]{2}(?:-[A-Z]{2})?$/.test(code)) {
+      showToast('Use a valid language code, such as de or pt-BR');
+      return;
+    }
+    if (!label) {
+      showToast('Enter a language display name');
+      return;
+    }
+    if (languages.some((language) => language.code.toLowerCase() === code.toLowerCase())) {
+      showToast('That language is already available');
+      return;
+    }
+    setLanguages([...languages, { code, label }]);
+    setNewLanguageCode('');
+    setNewLanguageLabel('');
+    showToast('Language added. Save site settings to publish it.');
+  };
+
+  const removeLanguage = (code) => {
+    const nextLanguages = languages.filter((item) => item.code !== code);
+    setLanguages(nextLanguages);
+    if (language === code) setLanguage('en');
+    showToast('Language removed. Save site settings to publish the change.');
+  };
+
+  const openTranslationModal = (type, form) => {
+    let translations = {};
+    try {
+      translations = JSON.parse(form.translationsText || '{}');
+    } catch {
+      translations = {};
+    }
+
+    const language = languages.some((item) => item.code === 'ar')
+      ? 'ar'
+      : languages[0]?.code || 'en';
+    const existing = translations[language] || {};
+    const fields = type === 'tour'
+      ? [
+          { key: 'title', label: 'Tour Title', value: existing.title || '', multiline: false },
+          { key: 'destination', label: 'Destination', value: existing.destination || '', multiline: false },
+          { key: 'category', label: 'Tour Type / Category', value: existing.category || '', multiline: false },
+          { key: 'overview', label: 'Overview', value: existing.overview || '', multiline: true },
+          { key: 'highlights', label: 'Highlights (one per line)', value: (existing.highlights || []).join('\n'), multiline: true },
+          { key: 'included', label: 'Included (one per line)', value: (existing.included || []).join('\n'), multiline: true },
+          { key: 'excluded', label: 'Excluded (one per line)', value: (existing.excluded || []).join('\n'), multiline: true },
+          { key: 'travelInfo', label: 'Travel Information', value: existing.travelInfo || '', multiline: true },
+        ]
+      : type === 'destination'
+        ? [
+            { key: 'name', label: 'Destination Name', value: existing.name || '', multiline: false },
+            { key: 'region', label: 'Region', value: existing.region || '', multiline: false },
+            { key: 'tagline', label: 'Tagline', value: existing.tagline || '', multiline: false },
+            { key: 'description', label: 'Description', value: existing.description || '', multiline: true },
+            { key: 'experiences', label: 'Experiences (one per line)', value: (existing.experiences || []).join('\n'), multiline: true },
+          ]
+        : [
+            { key: 'title', label: 'Article Title', value: existing.title || '', multiline: false },
+            { key: 'category', label: 'Category', value: existing.category || '', multiline: false },
+            { key: 'excerpt', label: 'Excerpt', value: existing.excerpt || '', multiline: true },
+            { key: 'content', label: 'Article Content (paragraph per block)', value: (existing.content || []).join('\n\n'), multiline: true },
+          ];
+
+    setTranslationModal({ type, form, language, translations, fields });
+  };
+
+  const changeTranslationLanguage = (language) => {
+    if (!translationModal) return;
+    const current = {};
+    translationModal.fields.forEach((field) => {
+      if (['highlights', 'included', 'excluded', 'experiences'].includes(field.key)) {
+        current[field.key] = field.value.split('\n').map((value) => value.trim()).filter(Boolean);
+      } else if (field.key === 'content') {
+        current[field.key] = field.value.split('\n\n').map((value) => value.trim()).filter(Boolean);
+      } else {
+        current[field.key] = field.value;
+      }
+    });
+    const translations = {
+      ...translationModal.translations,
+      [translationModal.language]: current,
+    };
+    const existing = translations[language] || {};
+    const type = translationModal.type;
+    const template = openTranslationFields(type, existing);
+    setTranslationModal({ ...translationModal, language, translations, fields: template });
+  };
+
+  const openTranslationFields = (type, existing) => type === 'tour'
+    ? [
+        { key: 'title', label: 'Tour Title', value: existing.title || '', multiline: false },
+        { key: 'destination', label: 'Destination', value: existing.destination || '', multiline: false },
+        { key: 'category', label: 'Tour Type / Category', value: existing.category || '', multiline: false },
+        { key: 'overview', label: 'Overview', value: existing.overview || '', multiline: true },
+        { key: 'highlights', label: 'Highlights (one per line)', value: (existing.highlights || []).join('\n'), multiline: true },
+        { key: 'included', label: 'Included (one per line)', value: (existing.included || []).join('\n'), multiline: true },
+        { key: 'excluded', label: 'Excluded (one per line)', value: (existing.excluded || []).join('\n'), multiline: true },
+        { key: 'travelInfo', label: 'Travel Information', value: existing.travelInfo || '', multiline: true },
+      ]
+    : type === 'destination'
+      ? [
+          { key: 'name', label: 'Destination Name', value: existing.name || '', multiline: false },
+          { key: 'region', label: 'Region', value: existing.region || '', multiline: false },
+          { key: 'tagline', label: 'Tagline', value: existing.tagline || '', multiline: false },
+          { key: 'description', label: 'Description', value: existing.description || '', multiline: true },
+          { key: 'experiences', label: 'Experiences (one per line)', value: (existing.experiences || []).join('\n'), multiline: true },
+        ]
+      : [
+          { key: 'title', label: 'Article Title', value: existing.title || '', multiline: false },
+          { key: 'category', label: 'Category', value: existing.category || '', multiline: false },
+          { key: 'excerpt', label: 'Excerpt', value: existing.excerpt || '', multiline: true },
+          { key: 'content', label: 'Article Content (paragraph per block)', value: (existing.content || []).join('\n\n'), multiline: true },
+        ];
+
+  const saveTranslationModal = () => {
+    if (!translationModal) return;
+    const translated = {};
+    translationModal.fields.forEach((field) => {
+      if (['highlights', 'included', 'excluded', 'experiences'].includes(field.key)) {
+        translated[field.key] = field.value.split('\n').map((value) => value.trim()).filter(Boolean);
+      } else if (field.key === 'content') {
+        translated[field.key] = field.value.split('\n\n').map((value) => value.trim()).filter(Boolean);
+      } else {
+        translated[field.key] = field.value;
+      }
+    });
+
+    const translations = {
+      ...translationModal.translations,
+      [translationModal.language]: translated,
+    };
+    const serialized = JSON.stringify(translations, null, 2);
+
+    if (translationModal.type === 'tour') setTourForm({ ...tourForm, translationsText: serialized });
+    if (translationModal.type === 'destination') setDestForm({ ...destForm, translationsText: serialized });
+    if (translationModal.type === 'blog') setBlogForm({ ...blogForm, translationsText: serialized });
+    setTranslationModal(null);
+    showToast('Translation saved');
+  };
+
+  const NAV = [
+    { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'bookings', label: 'Booking Inquiries', icon: CalendarCheck2, badge: stats?.counts?.newBookings },
+    { id: 'contacts', label: 'Contact Messages', icon: Mail, badge: stats?.counts?.newContacts },
+    { id: 'subscribers', label: 'Newsletter', icon: Users, badge: stats?.counts?.subscribers },
+    { id: 'tours', label: 'Tours Manager', icon: Compass },
+    { id: 'destinations', label: 'Destinations', icon: MapPin },
+    { id: 'blog', label: 'Travel Journal', icon: FileText },
+    { id: 'settings', label: 'Site Settings', icon: Settings },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#F4F6FA] flex flex-col lg:flex-row text-[#102355]">
+      {/* Standalone Sidebar */}
+      <aside className="w-full lg:w-64 bg-[#0A1638] text-white flex flex-col shrink-0">
+        <div className="p-5 border-b border-white/10">
+          <OraBrandLogo variant="header" onDark />
+          <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-[#D2A058] font-semibold">
+            Admin Control Panel
+          </p>
+        </div>
+
+        <nav className="flex-1 p-3 space-y-1 overflow-x-auto lg:overflow-visible flex lg:flex-col gap-1">
+          {NAV.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setTab(item.id)}
+              className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-sm text-sm transition-colors whitespace-nowrap ${
+                tab === item.id
+                  ? 'bg-[#D2A058] text-[#0A1638] font-bold'
+                  : 'text-white/80 hover:bg-white/10'
+              }`}
+            >
+              <span className="inline-flex items-center gap-2.5">
+                <item.icon size={17} />
+                {item.label}
+              </span>
+              {item.badge > 0 && (
+                <span
+                  className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                    tab === item.id ? 'bg-[#0A1638] text-[#D2A058]' : 'bg-[#D2A058]/20 text-[#D2A058]'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-white/10 space-y-2">
+          <Link
+            to="/"
+            target="_blank"
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs bg-white/10 hover:bg-white/20 rounded-sm text-white/90"
+          >
+            <ExternalLink size={14} /> View Live Website
+          </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs text-red-300 hover:bg-red-500/20 rounded-sm"
+          >
+            <LogOut size={14} /> Sign Out ({admin.email})
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between gap-4">
+          <h1 className="font-serif text-2xl text-[#102355] capitalize">
+            {NAV.find((n) => n.id === tab)?.label}
+          </h1>
+          <div className="flex items-center gap-3">
+            {toast && (
+              <span className="inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-sm">
+                <CheckCircle2 size={14} /> {toast}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={loadAll}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold border border-slate-300 rounded-sm hover:bg-slate-50"
+            >
+              <RefreshCw size={14} /> Refresh
+            </button>
+          </div>
+        </header>
+
+        <main className="p-6 flex-1 overflow-y-auto">
+          {/* ================= OVERVIEW TAB ================= */}
+          {tab === 'overview' && (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {[
+                  { label: 'Booking Inquiries', value: stats?.counts?.bookings ?? 0, sub: `${stats?.counts?.newBookings ?? 0} New` },
+                  { label: 'Contact Messages', value: stats?.counts?.contacts ?? 0, sub: `${stats?.counts?.newContacts ?? 0} New` },
+                  { label: 'Newsletter Subscribers', value: stats?.counts?.subscribers ?? 0, sub: 'Active Emails' },
+                  { label: 'Published Tours', value: stats?.counts?.tours ?? 0, sub: `${stats?.counts?.destinations ?? 0} Destinations` },
+                ].map((card) => (
+                  <div key={card.label} className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold">{card.label}</p>
+                    <p className="mt-2 font-serif text-3xl font-bold text-[#102355]">{card.value}</p>
+                    <p className="mt-1 text-xs text-[#B88346] font-semibold">{card.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-sm border border-slate-200">
+                  <h2 className="font-serif text-xl text-[#102355] mb-4">Recent Booking Requests</h2>
+                  <div className="space-y-3">
+                    {(stats?.recentBookings || []).length === 0 ? (
+                      <p className="text-sm text-slate-500">No bookings recorded yet.</p>
+                    ) : (
+                      stats.recentBookings.map((b) => (
+                        <div key={b.id} className="p-3 bg-slate-50 rounded-sm flex items-center justify-between gap-3 text-sm">
+                          <div>
+                            <p className="font-semibold text-[#102355]">{b.fullName}</p>
+                            <p className="text-xs text-slate-500">{b.tourTitle || 'Custom Journey'} • {b.email}</p>
+                          </div>
+                          <span className={`text-[11px] px-2.5 py-0.5 border rounded-full font-semibold ${STATUS_BADGE[b.status] || ''}`}>
+                            {b.status}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-sm border border-slate-200">
+                  <h2 className="font-serif text-xl text-[#102355] mb-4">Recent Contact Messages</h2>
+                  <div className="space-y-3">
+                    {(stats?.recentContacts || []).length === 0 ? (
+                      <p className="text-sm text-slate-500">No contact messages yet.</p>
+                    ) : (
+                      stats.recentContacts.map((c) => (
+                        <div key={c.id} className="p-3 bg-slate-50 rounded-sm flex items-center justify-between gap-3 text-sm">
+                          <div>
+                            <p className="font-semibold text-[#102355]">{c.fullName}</p>
+                            <p className="text-xs text-slate-500">{c.subject} • {c.email}</p>
+                          </div>
+                          <span className={`text-[11px] px-2.5 py-0.5 border rounded-full font-semibold ${STATUS_BADGE[c.status] || ''}`}>
+                            {c.status}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= BOOKINGS TAB ================= */}
+          {tab === 'bookings' && (
+            <div className="bg-white border border-slate-200 rounded-sm p-6">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+                <p className="text-sm text-slate-600">All booking form submissions from Tour Details and Contact pages.</p>
+                <button
+                  type="button"
+                  onClick={() => exportCsv('ora-bookings.csv', bookings)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#102355] text-white text-xs font-semibold rounded-sm"
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase text-slate-500 border-y">
+                    <tr>
+                      <th className="py-3 px-3">Client</th>
+                      <th className="py-3 px-3">Tour / Trip</th>
+                      <th className="py-3 px-3">Date & Guests</th>
+                      <th className="py-3 px-3">Notes</th>
+                      <th className="py-3 px-3">Status</th>
+                      <th className="py-3 px-3">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {bookings.map((b) => (
+                      <tr key={b.id} className="hover:bg-slate-50/70">
+                        <td className="py-3 px-3">
+                          <p className="font-semibold">{b.fullName}</p>
+                          <p className="text-xs text-slate-500">{b.email}</p>
+                          {b.phone && <p className="text-xs text-slate-500">{b.phone}</p>}
+                        </td>
+                        <td className="py-3 px-3">{b.tourTitle || 'Custom Inquiry'}</td>
+                        <td className="py-3 px-3 text-xs">
+                          <p>{b.travelDate || 'Flexible'}</p>
+                          <p className="text-slate-500">{b.guests} Guests</p>
+                        </td>
+                        <td className="py-3 px-3 max-w-xs text-xs text-slate-600">{b.notes}</td>
+                        <td className="py-3 px-3">
+                          <select
+                            value={b.status}
+                            onChange={async (e) => {
+                              await adminApi.updateBooking(b.id, { status: e.target.value });
+                              showToast('Booking status updated');
+                              loadAll();
+                            }}
+                            className="text-xs border rounded-sm px-2 py-1 bg-white"
+                          >
+                            {['NEW', 'CONTACTED', 'QUOTED', 'CONFIRMED', 'ARCHIVED'].map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="py-3 px-3">
+                          <button
+                            type="button"
+                            onClick={() => { setSubmissionDetail({ type: 'contact', data: c }); setReplyDraft(c.replyMessage || ''); }}
+                            className="text-[#102355] hover:text-[#D2A058] p-1 mr-1"
+                            title="View details and reply"
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setSubmissionDetail({ type: 'booking', data: b }); setReplyDraft(b.replyMessage || ''); }}
+                            className="text-[#102355] hover:text-[#D2A058] p-1 mr-1"
+                            title="View details and reply"
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!window.confirm('Delete this booking inquiry?')) return;
+                              await adminApi.deleteBooking(b.id);
+                              showToast('Booking deleted');
+                              loadAll();
+                            }}
+                            className="text-red-600 hover:text-red-800 p-1"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ================= CONTACT MESSAGES TAB ================= */}
+          {tab === 'contacts' && (
+            <div className="bg-white border border-slate-200 rounded-sm p-6">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+                <p className="text-sm text-slate-600">All Contact Us form submissions stored in Prisma.</p>
+                <button
+                  type="button"
+                  onClick={() => exportCsv('ora-contact-messages.csv', contacts)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#102355] text-white text-xs font-semibold rounded-sm"
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase text-slate-500 border-y">
+                    <tr>
+                      <th className="py-3 px-3">Sender</th>
+                      <th className="py-3 px-3">Subject</th>
+                      <th className="py-3 px-3">Message</th>
+                      <th className="py-3 px-3">Status</th>
+                      <th className="py-3 px-3">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {contacts.map((c) => (
+                      <tr key={c.id}>
+                        <td className="py-3 px-3">
+                          <p className="font-semibold">{c.fullName}</p>
+                          <p className="text-xs text-slate-500">{c.email}</p>
+                          {c.phone && <p className="text-xs text-slate-500">{c.phone}</p>}
+                        </td>
+                        <td className="py-3 px-3 text-xs font-medium">{c.subject}</td>
+                        <td className="py-3 px-3 max-w-md text-xs text-slate-600">{c.message}</td>
+                        <td className="py-3 px-3">
+                          <select
+                            value={c.status}
+                            onChange={async (e) => {
+                              await adminApi.updateContact(c.id, { status: e.target.value });
+                              showToast('Message status updated');
+                              loadAll();
+                            }}
+                            className="text-xs border rounded-sm px-2 py-1 bg-white"
+                          >
+                            {['NEW', 'READ', 'REPLIED', 'ARCHIVED'].map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="py-3 px-3">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!window.confirm('Delete this message?')) return;
+                              await adminApi.deleteContact(c.id);
+                              showToast('Message deleted');
+                              loadAll();
+                            }}
+                            className="text-red-600 hover:text-red-800 p-1"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ================= NEWSLETTER TAB ================= */}
+          {tab === 'subscribers' && (
+            <div className="bg-white border border-slate-200 rounded-sm p-6">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+                <p className="text-sm text-slate-600">All newsletter subscriptions captured across the website.</p>
+                <button
+                  type="button"
+                  onClick={() => exportCsv('ora-newsletter.csv', subscribers)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#102355] text-white text-xs font-semibold rounded-sm"
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+              </div>
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 text-xs uppercase text-slate-500 border-y">
+                  <tr>
+                    <th className="py-3 px-3">Email</th>
+                    <th className="py-3 px-3">Source</th>
+                    <th className="py-3 px-3">Subscribed At</th>
+                    <th className="py-3 px-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {subscribers.map((s) => (
+                    <tr key={s.id}>
+                      <td className="py-3 px-3 font-medium">{s.email}</td>
+                      <td className="py-3 px-3 text-xs text-slate-500">{s.source}</td>
+                      <td className="py-3 px-3 text-xs text-slate-500">
+                        {new Date(s.createdAt).toLocaleString()}
+                      </td>
+                      <td className="py-3 px-3">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await adminApi.deleteSubscriber(s.id);
+                            showToast('Subscriber removed');
+                            loadAll();
+                          }}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* ================= TOURS MANAGER TAB ================= */}
+          {tab === 'tours' && (
+            <div className="space-y-6">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setTourForm({
+                      title: '',
+                      destination: '',
+                      destinationsText: 'Cairo, Giza',
+                      durationDays: 5,
+                      durationLabel: '5 Days / 4 Nights',
+                      category: 'Luxury Egypt Tours',
+                      style: 'Luxury',
+                      priceDisplay: 'Tailored Quote / Price on Request',
+                      featured: false,
+                      image: '',
+                      galleryText: '',
+                      translationsText: '{}',
+                      overview: '',
+                      highlightsText: '',
+                      includedText: '',
+                      excludedText: '',
+                      travelInfo: '',
+                    })
+                  }
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#102355] text-white text-xs uppercase tracking-[0.16em] font-bold rounded-sm"
+                >
+                  <Plus size={15} /> Add New Tour
+                </button>
+              </div>
+
+              {tourForm && (
+                <form onSubmit={saveTour} className="bg-white p-6 border border-[#D2A058] rounded-sm space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-serif text-xl text-[#102355]">
+                      {tourForm.dbId ? 'Edit Tour' : 'Create New Tour'}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => openTranslationModal('tour', tourForm)}
+                      className="px-4 py-2 border border-[#D2A058] text-[#102355] text-xs font-bold uppercase rounded-sm"
+                    >
+                      Add / Edit Translation
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      required
+                      placeholder="Tour Title"
+                      value={tourForm.title}
+                      onChange={(e) => setTourForm({ ...tourForm, title: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      required
+                      placeholder="Destination Display (e.g. Cairo, Luxor & Aswan)"
+                      value={tourForm.destination}
+                      onChange={(e) => setTourForm({ ...tourForm, destination: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Destinations Filter Tags (comma-separated)"
+                      value={tourForm.destinationsText}
+                      onChange={(e) => setTourForm({ ...tourForm, destinationsText: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Duration Label (e.g. 7 Days / 6 Nights)"
+                      value={tourForm.durationLabel}
+                      onChange={(e) => setTourForm({ ...tourForm, durationLabel: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Duration Days"
+                      value={tourForm.durationDays}
+                      onChange={(e) => setTourForm({ ...tourForm, durationDays: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Category (e.g. Nile Cruises)"
+                      value={tourForm.category}
+                      onChange={(e) => setTourForm({ ...tourForm, category: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Price Display"
+                      value={tourForm.priceDisplay}
+                      onChange={(e) => setTourForm({ ...tourForm, priceDisplay: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Cover Image URL"
+                      value={tourForm.image}
+                      onChange={(e) => setTourForm({ ...tourForm, image: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label className="px-3 py-2 border border-dashed border-[#D2A058] rounded-sm text-sm cursor-pointer">
+                      Upload Cover Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="block mt-2 w-full text-xs"
+                        onChange={async (e) => {
+                          if (!e.target.files?.[0]) return;
+                          try {
+                            const url = await uploadAdminImage(e.target.files[0]);
+                            setTourForm({ ...tourForm, image: url });
+                            showToast('Cover image uploaded');
+                          } catch (err) { showToast(err.message); }
+                        }}
+                      />
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Gallery image URLs (one per line)"
+                      value={tourForm.galleryText}
+                      onChange={(e) => setTourForm({ ...tourForm, galleryText: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                  </div>
+                  <label className="block px-3 py-2 border border-dashed border-[#D2A058] rounded-sm text-sm cursor-pointer">
+                    Add Images to Gallery
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="block mt-2 w-full text-xs"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (!files.length) return;
+                        try {
+                          const urls = [];
+                          for (const file of files) urls.push(await uploadAdminImage(file));
+                          setTourForm({
+                            ...tourForm,
+                            galleryText: [...(tourForm.galleryText || '').split('\n').map((v) => v.trim()).filter(Boolean), ...urls].join('\n'),
+                          });
+                          showToast(`${urls.length} gallery image(s) uploaded`);
+                        } catch (err) { showToast(err.message); }
+                      }}
+                    />
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Overview"
+                    value={tourForm.overview}
+                    onChange={(e) => setTourForm({ ...tourForm, overview: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm"
+                  />
+                  <textarea
+                    rows={5}
+                    placeholder={'Translations JSON, e.g. {"ar":{"title":"...","overview":"...","highlights":["..."]},"fr":{"title":"..."}}'}
+                    value={tourForm.translationsText || '{}'}
+                    onChange={(e) => setTourForm({ ...tourForm, translationsText: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm font-mono"
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <textarea
+                      rows={4}
+                      placeholder="Highlights (one per line)"
+                      value={tourForm.highlightsText}
+                      onChange={(e) => setTourForm({ ...tourForm, highlightsText: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <textarea
+                      rows={4}
+                      placeholder="Included (one per line)"
+                      value={tourForm.includedText}
+                      onChange={(e) => setTourForm({ ...tourForm, includedText: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <textarea
+                      rows={4}
+                      placeholder="Excluded (one per line)"
+                      value={tourForm.excludedText}
+                      onChange={(e) => setTourForm({ ...tourForm, excludedText: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                  </div>
+                  <label className="inline-flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={tourForm.featured}
+                      onChange={(e) => setTourForm({ ...tourForm, featured: e.target.checked })}
+                    />
+                    Feature on Homepage
+                  </label>
+                  <div className="flex gap-3">
+                    <button type="submit" className="px-5 py-2 bg-[#102355] text-white text-xs font-bold uppercase rounded-sm">
+                      Save Tour
+                    </button>
+                    <button type="button" onClick={() => setTourForm(null)} className="px-5 py-2 border text-xs rounded-sm">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="bg-white border border-slate-200 rounded-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase text-slate-500 border-b">
+                    <tr>
+                      <th className="py-3 px-4">Title</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Duration</th>
+                      <th className="py-3 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {tours.map((t) => (
+                      <tr key={t.dbId || t.id}>
+                        <td className="py-3 px-4 font-semibold">{t.title}</td>
+                        <td className="py-3 px-4 text-xs">{t.category}</td>
+                        <td className="py-3 px-4 text-xs">{t.durationLabel}</td>
+                        <td className="py-3 px-4 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setTourForm({
+                                ...t,
+                                destinationsText: (t.destinations || []).join(', '),
+                                highlightsText: (t.highlights || []).join('\n'),
+                                includedText: (t.included || []).join('\n'),
+                                excludedText: (t.excluded || []).join('\n'),
+                                galleryText: (t.gallery || []).join('\n'),
+                                translationsText: JSON.stringify(t.translations || {}, null, 2),
+                              })
+                            }
+                            className="text-blue-600 p-1"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          {t.dbId && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (!window.confirm('Delete this tour?')) return;
+                                await adminApi.deleteTour(t.dbId);
+                                showToast('Tour deleted');
+                                loadAll();
+                              }}
+                              className="text-red-600 p-1"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ================= DESTINATIONS MANAGER TAB ================= */}
+          {tab === 'destinations' && (
+            <div className="space-y-6">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDestForm({
+                      name: '',
+                      region: 'Upper Egypt',
+                      tagline: '',
+                      description: '',
+                      image: '',
+                      translationsText: '{}',
+                      experiencesText: '',
+                    })
+                  }
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#102355] text-white text-xs uppercase tracking-[0.16em] font-bold rounded-sm"
+                >
+                  <Plus size={15} /> Add Destination
+                </button>
+              </div>
+
+              {destForm && (
+                <form onSubmit={saveDestination} className="bg-white p-6 border border-[#D2A058] rounded-sm space-y-4">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => openTranslationModal('destination', destForm)}
+                      className="px-4 py-2 border border-[#D2A058] text-[#102355] text-xs font-bold uppercase rounded-sm"
+                    >
+                      Add / Edit Translation
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      required
+                      placeholder="Destination Name"
+                      value={destForm.name}
+                      onChange={(e) => setDestForm({ ...destForm, name: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Region (e.g. Upper Egypt, Red Sea)"
+                      value={destForm.region}
+                      onChange={(e) => setDestForm({ ...destForm, region: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Tagline"
+                      value={destForm.tagline}
+                      onChange={(e) => setDestForm({ ...destForm, tagline: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Image URL"
+                      value={destForm.image}
+                      onChange={(e) => setDestForm({ ...destForm, image: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                  </div>
+                  <label className="block px-3 py-2 border border-dashed border-[#D2A058] rounded-sm text-sm cursor-pointer">
+                    Upload Destination Image
+                    <input type="file" accept="image/*" className="block mt-2 w-full text-xs" onChange={async (e) => {
+                      if (!e.target.files?.[0]) return;
+                      try { setDestForm({ ...destForm, image: await uploadAdminImage(e.target.files[0]) }); showToast('Destination image uploaded'); }
+                      catch (err) { showToast(err.message); }
+                    }} />
+                  </label>
+                  <input
+                    placeholder="Experiences (comma-separated)"
+                    value={destForm.experiencesText}
+                    onChange={(e) => setDestForm({ ...destForm, experiencesText: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm"
+                  />
+                  <textarea
+                    rows={3}
+                    placeholder="Description"
+                    value={destForm.description}
+                    onChange={(e) => setDestForm({ ...destForm, description: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm"
+                  />
+                  <textarea
+                    rows={4}
+                    placeholder={'Translations JSON, e.g. {"ar":{"name":"...","description":"..."},"fr":{"name":"..."}}'}
+                    value={destForm.translationsText || '{}'}
+                    onChange={(e) => setDestForm({ ...destForm, translationsText: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm font-mono"
+                  />
+                  <div className="flex gap-3">
+                    <button type="submit" className="px-5 py-2 bg-[#102355] text-white text-xs font-bold uppercase rounded-sm">
+                      Save Destination
+                    </button>
+                    <button type="button" onClick={() => setDestForm(null)} className="px-5 py-2 border text-xs rounded-sm">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="bg-white border border-slate-200 rounded-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase text-slate-500 border-b">
+                    <tr>
+                      <th className="py-3 px-4">Destination</th>
+                      <th className="py-3 px-4">Region</th>
+                      <th className="py-3 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {destinations.map((d) => (
+                      <tr key={d.dbId || d.id}>
+                        <td className="py-3 px-4 font-semibold">{d.name}</td>
+                        <td className="py-3 px-4 text-xs">{d.region}</td>
+                        <td className="py-3 px-4 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDestForm({
+                                ...d,
+                                experiencesText: (d.experiences || []).join(', '),
+                                translationsText: JSON.stringify(d.translations || {}, null, 2),
+                              })
+                            }
+                            className="text-blue-600 p-1"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          {d.dbId && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (!window.confirm('Delete destination?')) return;
+                                await adminApi.deleteDestination(d.dbId);
+                                showToast('Destination deleted');
+                                loadAll();
+                              }}
+                              className="text-red-600 p-1"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ================= BLOG MANAGER TAB ================= */}
+          {tab === 'blog' && (
+            <div className="space-y-6">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setBlogForm({
+                      title: '',
+                      category: 'Travel Planning',
+                      readTime: '5 min read',
+                      image: '',
+                      translationsText: '{}',
+                      excerpt: '',
+                      contentText: '',
+                    })
+                  }
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#102355] text-white text-xs uppercase tracking-[0.16em] font-bold rounded-sm"
+                >
+                  <Plus size={15} /> New Article
+                </button>
+              </div>
+
+              {blogForm && (
+                <form onSubmit={saveBlog} className="bg-white p-6 border border-[#D2A058] rounded-sm space-y-4">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => openTranslationModal('blog', blogForm)}
+                      className="px-4 py-2 border border-[#D2A058] text-[#102355] text-xs font-bold uppercase rounded-sm"
+                    >
+                      Add / Edit Translation
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      required
+                      placeholder="Article Title"
+                      value={blogForm.title}
+                      onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Category"
+                      value={blogForm.category}
+                      onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Read Time (e.g. 6 min read)"
+                      value={blogForm.readTime}
+                      onChange={(e) => setBlogForm({ ...blogForm, readTime: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                    <input
+                      placeholder="Cover Image URL"
+                      value={blogForm.image}
+                      onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })}
+                      className="px-3 py-2 border rounded-sm text-sm"
+                    />
+                  </div>
+                  <label className="block px-3 py-2 border border-dashed border-[#D2A058] rounded-sm text-sm cursor-pointer">
+                    Upload Article Cover
+                    <input type="file" accept="image/*" className="block mt-2 w-full text-xs" onChange={async (e) => {
+                      if (!e.target.files?.[0]) return;
+                      try { setBlogForm({ ...blogForm, image: await uploadAdminImage(e.target.files[0]) }); showToast('Article cover uploaded'); }
+                      catch (err) { showToast(err.message); }
+                    }} />
+                  </label>
+                  <input
+                    placeholder="Short Excerpt"
+                    value={blogForm.excerpt}
+                    onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm"
+                  />
+                  <textarea
+                    rows={4}
+                    placeholder={'Translations JSON, e.g. {"ar":{"title":"...","excerpt":"...","content":["..."]},"fr":{"title":"..."}}'}
+                    value={blogForm.translationsText || '{}'}
+                    onChange={(e) => setBlogForm({ ...blogForm, translationsText: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm font-mono"
+                  />
+                  <textarea
+                    rows={6}
+                    placeholder="Article paragraphs (separate paragraphs with an empty line)"
+                    value={blogForm.contentText}
+                    onChange={(e) => setBlogForm({ ...blogForm, contentText: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-sm text-sm"
+                  />
+                  <div className="flex gap-3">
+                    <button type="submit" className="px-5 py-2 bg-[#102355] text-white text-xs font-bold uppercase rounded-sm">
+                      Publish Article
+                    </button>
+                    <button type="button" onClick={() => setBlogForm(null)} className="px-5 py-2 border text-xs rounded-sm">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="bg-white border border-slate-200 rounded-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase text-slate-500 border-b">
+                    <tr>
+                      <th className="py-3 px-4">Article Title</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {posts.map((p) => (
+                      <tr key={p.dbId || p.id}>
+                        <td className="py-3 px-4 font-semibold">{p.title}</td>
+                        <td className="py-3 px-4 text-xs">{p.category}</td>
+                        <td className="py-3 px-4 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setBlogForm({
+                                ...p,
+                                contentText: (p.content || []).join('\n\n'),
+                                translationsText: JSON.stringify(p.translations || {}, null, 2),
+                              })
+                            }
+                            className="text-blue-600 p-1"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          {p.dbId && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (!window.confirm('Delete article?')) return;
+                                await adminApi.deleteBlog(p.dbId);
+                                showToast('Article deleted');
+                                loadAll();
+                              }}
+                              className="text-red-600 p-1"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ================= SITE SETTINGS TAB ================= */}
+          {tab === 'settings' && (
+            <form onSubmit={saveSettings} className="max-w-2xl bg-white p-8 border border-slate-200 rounded-sm space-y-4">
+              <h2 className="font-serif text-2xl text-[#102355]">Business Contact & Social Links</h2>
+              <p className="text-xs text-slate-500">
+                Changes saved here automatically update the Footer and Contact Us page.
+              </p>
+              {[
+                { key: 'email', label: 'Verified Business Email' },
+                { key: 'phone', label: 'Verified Phone Number' },
+                { key: 'whatsapp', label: 'WhatsApp Link (https://wa.me/...)' },
+                { key: 'address', label: 'Office Address' },
+                { key: 'instagram', label: 'Instagram URL' },
+                { key: 'facebook', label: 'Facebook URL' },
+              ].map((field) => (
+                <div key={field.key}>
+                  <label className="block text-xs uppercase tracking-[0.14em] text-slate-600 font-semibold mb-1">
+                    {field.label}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings[field.key] || ''}
+                    onChange={(e) => setSettings({ ...settings, [field.key]: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-sm text-sm"
+                  />
+                </div>
+              ))}
+              <section className="pt-6 mt-6 border-t border-slate-200 space-y-4">
+                <div>
+                  <h3 className="font-serif text-xl text-[#102355]">Website Languages</h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Add or remove languages here. English is required as the fallback language. Removed languages disappear from the switcher and translation editor; existing content translations are kept.
+                  </p>
+                </div>
+                <label className="flex items-center gap-3 text-sm text-[#102355]">
+                  <input
+                    type="checkbox"
+                    checked={settings.showLanguageSwitcher !== false && settings.showLanguageSwitcher !== 'false'}
+                    onChange={(event) =>
+                      setSettings({ ...settings, showLanguageSwitcher: event.target.checked })
+                    }
+                    className="h-4 w-4 accent-[#102355]"
+                  />
+                  Show floating language switcher on the website
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {languages.map((language) => (
+                    <span key={language.code} className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-sm text-xs">
+                      <strong>{language.label}</strong>
+                      <span className="text-slate-500">{language.code}</span>
+                      {language.code !== 'en' && (
+                        <button
+                          type="button"
+                          onClick={() => removeLanguage(language.code)}
+                          className="text-red-600 hover:text-red-800 font-bold"
+                          aria-label={`Remove ${language.label}`}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3">
+                  <input
+                    value={newLanguageLabel}
+                    onChange={(e) => setNewLanguageLabel(e.target.value)}
+                    placeholder="Language name (e.g. German)"
+                    className="px-3 py-2 border border-slate-300 rounded-sm text-sm"
+                  />
+                  <input
+                    value={newLanguageCode}
+                    onChange={(e) => setNewLanguageCode(e.target.value)}
+                    placeholder="Language code (e.g. de)"
+                    maxLength={5}
+                    className="px-3 py-2 border border-slate-300 rounded-sm text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={addLanguage}
+                    className="px-4 py-2 bg-[#D2A058] text-[#102355] text-xs font-bold uppercase rounded-sm"
+                  >
+                    Add Language
+                  </button>
+                </div>
+              </section>
+              <button
+                type="submit"
+                className="px-6 py-3 bg-[#102355] text-white text-xs uppercase tracking-[0.18em] font-bold rounded-sm hover:bg-[#1B367A]"
+              >
+                Save All Settings
+              </button>
+            </form>
+          )}
+          {translationModal && (
+            <div
+              className="fixed inset-0 z-[70] bg-[#0A1638]/70 p-4 flex items-center justify-center"
+              onClick={() => setTranslationModal(null)}
+            >
+              <div
+                className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-sm shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-6 py-4 border-b flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#B88346] font-semibold">
+                      Content Translation
+                    </p>
+                    <h2 className="font-serif text-xl text-[#102355]">
+                      Translate {translationModal.type === 'blog' ? 'Article' : translationModal.type === 'tour' ? 'Tour' : 'Destination'}
+                    </h2>
+                  </div>
+                  <button type="button" onClick={() => setTranslationModal(null)} className="text-slate-500 hover:text-[#102355] text-xl">×</button>
+                </div>
+                <div className="p-6 space-y-5">
+                  <div>
+                    <label className="block text-xs uppercase tracking-[0.14em] text-slate-600 font-semibold mb-2">
+                      Translation Language
+                    </label>
+                    <select
+                      value={translationModal.language}
+                      onChange={(e) => changeTranslationLanguage(e.target.value)}
+                      className="w-full max-w-xs px-3 py-2.5 border border-slate-300 rounded-sm text-sm"
+                    >
+                      {languages.map((language) => (
+                        <option key={language.code} value={language.code}>
+                          {language.label} / {language.code}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {translationModal.fields.map((field, index) => (
+                      <label key={field.key} className={field.multiline ? 'md:col-span-2' : ''}>
+                        <span className="block text-xs uppercase tracking-[0.12em] text-slate-600 font-semibold mb-1.5">
+                          {field.label}
+                        </span>
+                        {field.multiline ? (
+                          <textarea
+                            rows={field.key === 'content' ? 10 : 4}
+                            value={field.value}
+                            onChange={(e) => setTranslationModal({
+                              ...translationModal,
+                              fields: translationModal.fields.map((item, itemIndex) =>
+                                itemIndex === index ? { ...item, value: e.target.value } : item
+                              ),
+                            })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-sm text-sm"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={field.value}
+                            onChange={(e) => setTranslationModal({
+                              ...translationModal,
+                              fields: translationModal.fields.map((item, itemIndex) =>
+                                itemIndex === index ? { ...item, value: e.target.value } : item
+                              ),
+                            })}
+                            className="w-full px-3 py-2.5 border border-slate-300 rounded-sm text-sm"
+                          />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={saveTranslationModal}
+                      className="px-5 py-2.5 bg-[#102355] text-white text-xs font-bold uppercase rounded-sm"
+                    >
+                      Save Translation
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTranslationModal(null)}
+                      className="px-5 py-2.5 border border-slate-300 text-xs font-bold uppercase rounded-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {submissionDetail && (
+            <div className="fixed inset-0 z-[60] bg-[#0A1638]/70 p-4 flex items-center justify-center" onClick={() => setSubmissionDetail(null)}>
+              <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                <div className="px-6 py-4 border-b flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#B88346] font-semibold">
+                      {submissionDetail.type === 'booking' ? 'Booking Details' : 'Contact Message'}
+                    </p>
+                    <h2 className="font-serif text-xl text-[#102355]">{submissionDetail.data.fullName}</h2>
+                  </div>
+                  <button type="button" onClick={() => setSubmissionDetail(null)} className="text-slate-500 hover:text-[#102355] text-xl">×</button>
+                </div>
+                <div className="p-6 space-y-5">
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div><dt className="text-xs text-slate-500">Email</dt><dd className="font-medium">{submissionDetail.data.email}</dd></div>
+                    {submissionDetail.data.phone && <div><dt className="text-xs text-slate-500">Phone</dt><dd className="font-medium">{submissionDetail.data.phone}</dd></div>}
+                    {submissionDetail.type === 'booking' ? (
+                      <>
+                        <div><dt className="text-xs text-slate-500">Tour</dt><dd>{submissionDetail.data.tourTitle || 'Custom Journey'}</dd></div>
+                        <div><dt className="text-xs text-slate-500">Travel Date</dt><dd>{submissionDetail.data.travelDate || 'Flexible'}</dd></div>
+                        <div><dt className="text-xs text-slate-500">Guests</dt><dd>{submissionDetail.data.guests}</dd></div>
+                        <div><dt className="text-xs text-slate-500">Submitted</dt><dd>{new Date(submissionDetail.data.createdAt).toLocaleString()}</dd></div>
+                      </>
+                    ) : (
+                      <>
+                        <div><dt className="text-xs text-slate-500">Subject</dt><dd>{submissionDetail.data.subject}</dd></div>
+                        <div><dt className="text-xs text-slate-500">Submitted</dt><dd>{new Date(submissionDetail.data.createdAt).toLocaleString()}</dd></div>
+                      </>
+                    )}
+                  </dl>
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm">
+                    <p className="text-xs uppercase tracking-[0.14em] text-slate-500 mb-2">Original Message</p>
+                    <p className="text-sm whitespace-pre-wrap">{submissionDetail.data.notes || submissionDetail.data.message}</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase tracking-[0.14em] text-slate-600 font-semibold mb-2">Reply</label>
+                    <textarea
+                      rows={5}
+                      value={replyDraft}
+                      onChange={(e) => setReplyDraft(e.target.value)}
+                      placeholder="Write a reply to the customer..."
+                      className="w-full px-3 py-2 border border-slate-300 rounded-sm text-sm"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      disabled={!replyDraft.trim()}
+                      onClick={async () => {
+                        try {
+                          const result = submissionDetail.type === 'booking'
+                            ? await adminApi.replyBooking(submissionDetail.data.id, replyDraft)
+                            : await adminApi.replyContact(submissionDetail.data.id, replyDraft);
+                          showToast(result.sent ? 'Reply email sent and saved' : 'Reply saved; configure SMTP to send email');
+                          setSubmissionDetail(null);
+                          loadAll();
+                        } catch (err) {
+                          showToast(err.message);
+                        }
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#102355] text-white text-xs font-bold uppercase rounded-sm disabled:opacity-50"
+                    >
+                      <Send size={14} /> Send & Save Reply
+                    </button>
+                    <a
+                      href={`mailto:${submissionDetail.data.email}?subject=${encodeURIComponent(submissionDetail.type === 'booking' ? `Re: ${submissionDetail.data.tourTitle || 'Your Journey'}` : `Re: ${submissionDetail.data.subject}`)}&body=${encodeURIComponent(replyDraft)}`}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 text-xs font-bold uppercase rounded-sm"
+                    >
+                      <Mail size={14} /> Open Email App
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
