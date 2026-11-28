@@ -49,6 +49,17 @@
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
+.admin-login .login-paper {
+  background-color: #f4f0e7;
+  background-image:
+    radial-gradient(circle at 100% 0, rgb(201 160 97 / 16%), transparent 14rem),
+    linear-gradient(135deg, rgb(255 255 255 / 54%), transparent 60%);
+}
+
+.admin-login .journey-route {
+  position: relative;
+}
+
 @media (max-width: 1023px) {
   .admin-sidebar {
     position: relative;

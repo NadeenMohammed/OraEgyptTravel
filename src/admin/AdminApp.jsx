@@ -22,9 +22,7 @@ import {
   EyeOff,
   Send,
   ArrowRight,
-  Clock3,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 import {
   adminApi,
@@ -216,134 +214,158 @@ export function AdminApp() {
   // ================= STANDALONE LOGIN SCREEN =================
   if (!admin) {
     return (
-      <div className="admin-login min-h-screen bg-[#fbf9f4] grid lg:grid-cols-2">
-        <section className="relative min-h-[360px] lg:min-h-screen overflow-hidden bg-[#08152f] text-white">
-          <img
-            src="https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1600&q=85"
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-35"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#08264a]/95 via-[#0d3450]/85 to-[#08152f]/95" />
-          <div className="relative z-10 min-h-[360px] lg:min-h-screen p-7 sm:p-10 lg:p-14 flex flex-col justify-between">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] sm:text-xs uppercase tracking-[0.14em] font-bold text-white/90 backdrop-blur-md">
-              <Sparkles size={14} className="text-[#e7b554]" />
-              ORA EGYPT TRAVEL — ADMIN PORTAL
-            </div>
+      <div className="admin-login relative min-h-screen overflow-hidden bg-[#08152f] text-[#fbf9f4]">
+        <img
+          src="https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1920&q=85"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-45"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#08152f]/95 via-[#08152f]/78 to-[#08152f]/62" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08152f]/80 via-transparent to-[#08152f]/40" />
+        <div className="editorial-grid absolute inset-0 opacity-30" />
 
-            <div className="max-w-xl py-10 lg:py-0">
-              <p className="text-[10px] sm:text-xs uppercase tracking-[0.28em] text-[#e7b554] font-bold">
-                ORA EGYPT TRAVEL MANAGEMENT
-              </p>
-              <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl leading-[0.98] text-balance">
-                Manage Tours, Custom Trips, Bookings &amp; SEO in One Place.
-              </h1>
-              <p className="mt-5 max-w-lg text-sm sm:text-base text-white/70 leading-relaxed">
-                Control your Egypt travel content and guest inquiries from one secure workspace.
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs text-white/85">
-                  <ShieldCheck size={15} className="text-[#e7b554]" />
-                  Protected Admin Access
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs text-white/85">
-                  <Clock3 size={15} className="text-[#e7b554]" />
-                  Secure Session
-                </span>
-              </div>
-            </div>
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-[1600px] flex-col px-5 sm:px-8 lg:px-14">
+          <header className="flex items-center justify-between gap-4 py-5 sm:py-7">
+            <OraBrandLogo variant="header" onDark />
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.14em] font-bold text-white/70 hover:text-[#e3c58f] transition-colors"
+            >
+              Return to the journey <ArrowRight size={14} />
+            </Link>
+          </header>
 
-            <div className="flex items-center justify-between gap-4 text-[11px] text-white/55">
-              <span>© {new Date().getFullYear()} ORA Egypt Travel · Cairo, Egypt</span>
-              <Link to="/" className="text-[#e7b554] hover:text-white transition-colors">
-                ← Back to Website
-              </Link>
-            </div>
-          </div>
-        </section>
+          <main className="flex flex-1 items-center py-7 sm:py-10 lg:py-12">
+            <div className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(390px,0.92fr)] xl:gap-20">
+              <section className="max-w-2xl">
+                <p className="flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.28em] text-[#e1c58f] font-bold">
+                  <span className="h-px w-9 bg-[#c9a061]" />
+                  Behind every remarkable journey
+                </p>
+                <h1 className="mt-6 font-serif text-[clamp(3.2rem,6.6vw,6.8rem)] leading-[0.88] font-medium tracking-[-0.035em] text-balance">
+                  Egypt is our story.
+                  <em className="mt-2 block font-medium text-[#d8b777]">You help tell it.</em>
+                </h1>
+                <p className="mt-6 max-w-lg text-sm sm:text-base leading-[1.8] text-white/72">
+                  Step into the ORA workspace to shape thoughtful itineraries, welcome new guests, and bring Egypt closer to the world.
+                </p>
 
-        <section className="flex items-center justify-center px-5 py-12 sm:px-10 lg:px-14">
-          <div className="w-full max-w-lg rounded-[28px] border border-[#e5e9ef] bg-white p-7 sm:p-10 shadow-[0_24px_70px_rgba(8,21,47,0.12)]">
-            <div className="flex justify-center mb-6">
-              <OraBrandLogo variant="full" />
-            </div>
-            <div className="text-center mb-8">
-              <h2 className="font-serif text-3xl text-[#102d49]">Dashboard Sign In</h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Enter your administrator credentials to access the control panel.
-              </p>
-            </div>
-
-            {loginError && (
-              <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {loginError}
-              </div>
-            )}
-
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label htmlFor="admin-email" className="mb-2 block text-[11px] uppercase tracking-[0.14em] text-[#254665] font-bold">
-                  Admin Email
-                </label>
-                <div className="relative">
-                  <Mail size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#d39127]" />
-                  <input
-                    id="admin-email"
-                    type="email"
-                    required
-                    autoComplete="username"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-[#fffdfa] py-3.5 pl-11 pr-4 text-sm text-[#102d49] focus:outline-none focus:ring-4 focus:ring-[#d99b2b]/10 focus:border-[#d99b2b]"
-                  />
+                <div className="journey-route mt-10 max-w-[470px] border-t border-[#c9a061]/45 pt-5">
+                  <div className="mb-4 flex items-center justify-between text-[9px] uppercase tracking-[0.2em] font-bold text-white/50">
+                    <span>A journey, thoughtfully curated</span>
+                    <span className="text-[#d8b777]">ORA / 01</span>
+                  </div>
+                  <div className="flex items-center gap-3 sm:gap-5">
+                    {['Cairo', 'Luxor', 'Aswan'].map((city, index) => (
+                      <React.Fragment key={city}>
+                        {index > 0 && <span className="h-px flex-1 bg-gradient-to-r from-[#c9a061]/70 to-white/20" />}
+                        <span className="flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.16em] font-semibold text-white/85">
+                          <span className="h-2 w-2 rounded-full border border-[#e1c58f] bg-[#c9a061] shadow-[0_0_14px_rgba(201,160,97,0.65)]" />
+                          {city}
+                        </span>
+                      </React.Fragment>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label htmlFor="admin-password" className="mb-2 block text-[11px] uppercase tracking-[0.14em] text-[#254665] font-bold">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#d39127]" />
-                  <input
-                    id="admin-password"
-                    type={showLoginPassword ? 'text' : 'password'}
-                    required
-                    autoComplete="current-password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    className="w-full rounded-xl border border-slate-200 bg-[#fffdfa] py-3.5 pl-11 pr-12 text-sm text-[#102d49] focus:outline-none focus:ring-4 focus:ring-[#d99b2b]/10 focus:border-[#d99b2b]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowLoginPassword((visible) => !visible)}
-                    aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-400 hover:text-[#102d49]"
-                  >
-                    {showLoginPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                  </button>
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loginLoading}
-                className="w-full inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#f3aa24] to-[#dc8e12] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_18px_rgba(216,142,18,0.24)] hover:brightness-105 transition disabled:opacity-60"
-              >
-                {loginLoading ? 'Signing In...' : 'Sign In to Dashboard'}
-                {!loginLoading && <ArrowRight size={17} />}
-              </button>
-            </form>
+              </section>
 
-            <div className="mt-7 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <span className="inline-flex items-center gap-2 text-slate-400">
-                <Clock3 size={14} className="text-[#d39127]" />
-                Secure administrator session
-              </span>
-              <Link to="/" className="font-semibold text-[#254665] hover:text-[#d39127] transition-colors">
-                Visit Website →
-              </Link>
+              <section className="flex justify-center lg:justify-end">
+                <div className="login-paper relative w-full max-w-[470px] overflow-hidden rounded-[4px_34px_4px_34px] border border-[#d9c99f]/70 px-7 py-8 text-[#08152f] shadow-[0_28px_90px_rgba(0,0,0,0.32)] sm:px-10 sm:py-10">
+                  <div className="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full border border-[#c9a061]/20" />
+                  <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border border-[#c9a061]/20" />
+
+                  <div className="relative flex items-start justify-between gap-4 border-b border-[#d8ccb4] pb-5">
+                    <div>
+                      <p className="text-[9px] uppercase tracking-[0.24em] font-bold text-[#9b7541]">Private collection</p>
+                      <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[#6d6a5e]">ORA / Team access</p>
+                    </div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a061]/60 text-[#b3874e]">
+                      <Compass size={23} strokeWidth={1.4} />
+                    </div>
+                  </div>
+
+                  <div className="relative mt-7">
+                    <h2 className="font-serif text-3xl sm:text-[2.15rem] leading-tight text-[#102355]">Welcome back.</h2>
+                    <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6d6a5e]">
+                      Pick up where you left off, creating journeys worth remembering.
+                    </p>
+                  </div>
+
+                  {loginError && (
+                    <div role="alert" className="relative mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      {loginError}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleLogin} className="relative mt-7 space-y-5">
+                    <div>
+                      <label htmlFor="admin-email" className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-[#33475d] font-bold">
+                        <span>Email address</span>
+                        <span className="text-[#b3874e]">01</span>
+                      </label>
+                      <input
+                        id="admin-email"
+                        type="email"
+                        required
+                        autoComplete="username"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        className="w-full border border-[#d8ccb4] bg-[#fffdf8]/75 px-4 py-3.5 text-sm text-[#102355] placeholder:text-[#9b978c] focus:border-[#b3874e] focus:outline-none focus:ring-2 focus:ring-[#c9a061]/15"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="admin-password" className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-[#33475d] font-bold">
+                        <span>Password</span>
+                        <span className="text-[#b3874e]">02</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="admin-password"
+                          type={showLoginPassword ? 'text' : 'password'}
+                          required
+                          autoComplete="current-password"
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          placeholder="Enter your password"
+                          className="w-full border border-[#d8ccb4] bg-[#fffdf8]/75 px-4 py-3.5 pr-12 text-sm text-[#102355] placeholder:text-[#9b978c] focus:border-[#b3874e] focus:outline-none focus:ring-2 focus:ring-[#c9a061]/15"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowLoginPassword((visible) => !visible)}
+                          aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-[#8b887e] hover:text-[#102355]"
+                        >
+                          {showLoginPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={loginLoading}
+                      className="group mt-2 inline-flex w-full items-center justify-between border border-[#c9a061] bg-[#102355] px-5 py-4 text-[11px] uppercase tracking-[0.16em] font-bold text-[#fbf9f4] transition-colors hover:bg-[#183466] disabled:opacity-60"
+                    >
+                      <span>{loginLoading ? 'Opening your workspace…' : 'Enter the workspace'}</span>
+                      {!loginLoading && <ArrowRight size={17} className="text-[#d8b777] transition-transform group-hover:translate-x-1" />}
+                    </button>
+                  </form>
+
+                  <div className="relative mt-5 flex items-center justify-between gap-3 border-t border-[#d8ccb4] pt-4 text-[9px] uppercase tracking-[0.1em] text-[#777366]">
+                    <span className="inline-flex items-center gap-2">
+                      <ShieldCheck size={14} className="text-[#a47b3f]" />
+                      Authorized team only
+                    </span>
+                    <span>Secure access</span>
+                  </div>
+                </div>
+              </section>
             </div>
-          </div>
-        </section>
+          </main>
+
+          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 py-4 text-[9px] uppercase tracking-[0.16em] text-white/45">
+            <span>© {new Date().getFullYear()} ORA Egypt Travel</span>
+            <span>Curated in Cairo · Made for the love of Egypt</span>
+          </footer>
+        </div>
       </div>
     );
   }
