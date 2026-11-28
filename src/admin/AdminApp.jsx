@@ -22,7 +22,9 @@ import {
   EyeOff,
   Send,
   ArrowRight,
+  Clock3,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import {
   adminApi,
