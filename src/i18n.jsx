@@ -50,7 +50,7 @@ function normalizeLanguages(value) {
 const resources = {
   en: {
     translation: {
-      nav: { destinations: 'Destinations', tours: 'Tours & Experiences', about: 'About Us', blog: 'Travel Journal', faq: 'FAQ', contact: 'Contact', plan: 'Plan Your Journey' },
+      nav: { home: 'Home', destinations: 'Destinations', tours: 'Tours & Experiences', about: 'About Us', blog: 'Travel Journal', faq: 'FAQ', contact: 'Contact', plan: 'Plan Your Journey' },
       common: { loading: 'Loading...', viewDetails: 'View Details', subscribe: 'Subscribe', emailPlaceholder: 'Enter your email address' },
       options: {
         categories: ['All Categories', 'Ancient Egypt Tours', 'Private Guided Tours', 'Nile Cruises', 'Luxury Egypt Tours', 'Desert Safaris', 'Adventure Tours', 'Cultural Experiences', 'Family Tours', 'Multi-Day Egypt Packages', 'Red Sea Experiences'],
@@ -129,7 +129,7 @@ const resources = {
   },
   ar: {
     translation: {
-      nav: { destinations: 'الوجهات', tours: 'الجولات والتجارب', about: 'من نحن', blog: 'مجلة السفر', faq: 'الأسئلة الشائعة', contact: 'تواصل معنا', plan: 'خطط رحلتك' },
+      nav: { home: 'الرئيسية', destinations: 'الوجهات', tours: 'الجولات والتجارب', about: 'من نحن', blog: 'مجلة السفر', faq: 'الأسئلة الشائعة', contact: 'تواصل معنا', plan: 'خطط رحلتك' },
       common: { loading: 'جارٍ التحميل...', viewDetails: 'عرض التفاصيل', subscribe: 'اشترك', emailPlaceholder: 'أدخل بريدك الإلكتروني' },
       options: {
         categories: ['كل الفئات', 'جولات مصر القديمة', 'جولات خاصة مع مرشد', 'رحلات نيلية', 'جولات مصر الفاخرة', 'رحلات سفاري صحراوية', 'جولات مغامرات', 'تجارب ثقافية', 'رحلات عائلية', 'برامج مصر متعددة الأيام', 'تجارب البحر الأحمر'],
@@ -208,7 +208,7 @@ const resources = {
   },
   es: {
     translation: {
-      nav: { destinations: 'Destinos', tours: 'Tours y Experiencias', about: 'Sobre Nosotros', blog: 'Diario de Viajes', faq: 'Preguntas Frecuentes', contact: 'Contacto', plan: 'Planifica tu Viaje' },
+      nav: { home: 'Inicio', destinations: 'Destinos', tours: 'Tours y Experiencias', about: 'Sobre Nosotros', blog: 'Diario de Viajes', faq: 'Preguntas Frecuentes', contact: 'Contacto', plan: 'Planifica tu Viaje' },
       common: { loading: 'Cargando...', viewDetails: 'Ver Detalles', subscribe: 'Suscribirse', emailPlaceholder: 'Introduce tu correo electrónico' },
       options: {
         categories: ['Todas las Categorías', 'Tours del Antiguo Egipto', 'Tours Privados Guiados', 'Cruceros por el Nilo', 'Tours de Lujo por Egipto', 'Safaris por el Desierto', 'Tours de Aventura', 'Experiencias Culturales', 'Tours Familiares', 'Paquetes de Varios Días', 'Experiencias en el Mar Rojo'],
@@ -287,7 +287,7 @@ const resources = {
   },
   fr: {
     translation: {
-      nav: { destinations: 'Destinations', tours: 'Circuits & Expériences', about: 'À Propos', blog: 'Journal de Voyage', faq: 'FAQ', contact: 'Contact', plan: 'Planifiez Votre Voyage' },
+      nav: { home: 'Accueil', destinations: 'Destinations', tours: 'Circuits & Expériences', about: 'À Propos', blog: 'Journal de Voyage', faq: 'FAQ', contact: 'Contact', plan: 'Planifiez Votre Voyage' },
       common: { loading: 'Chargement...', viewDetails: 'Voir les Détails', subscribe: 'S’abonner', emailPlaceholder: 'Entrez votre adresse e-mail' },
       options: {
         categories: ['Toutes les Catégories', 'Circuits Égypte Antique', 'Circuits Guidés Privés', 'Croisières sur le Nil', 'Circuits de Luxe en Égypte', 'Safaris dans le Désert', 'Circuits Aventure', 'Expériences Culturelles', 'Circuits en Famille', 'Circuits Multi-Jours', 'Expériences en Mer Rouge'],

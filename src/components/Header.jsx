@@ -6,6 +6,7 @@ import { OraBrandLogo } from './OraBrandLogo';
 import { useTranslation } from 'react-i18next';
 
 const NAV_ITEMS = [
+  { labelKey: 'nav.home', to: '/', end: true },
   { labelKey: 'nav.destinations', to: '/destinations' },
   { labelKey: 'nav.tours', to: '/tours' },
   { labelKey: 'nav.about', to: '/about' },
@@ -53,6 +54,7 @@ export function Header() {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.end}
               className={({ isActive }) =>
                 `text-sm font-semibold tracking-wide transition-colors ${
                   transparentMode
@@ -102,6 +104,7 @@ export function Header() {
                 <NavLink
                   key={item.to}
                   to={item.to}
+                  end={item.end}
                   className={({ isActive }) =>
                     `text-base py-1 border-b border-[#EFE4D0] ${
                       isActive ? 'text-[#D2A058] font-semibold' : 'text-[#102355]'
