@@ -72,6 +72,7 @@ const resources = {
         { q: 'When is the best time of year to visit Egypt?', a: 'October through April offers the most comfortable temperatures for sightseeing and Nile cruising, while the Red Sea and Alexandria remain enjoyable year-round.' },
         { q: 'How far in advance should I plan my trip?', a: 'For peak winter dates (November–February) or private Dahabiya charters, we recommend inquiring 3 to 6 months ahead. However, our local team can also craft bespoke itineraries on shorter notice.' },
       ],
+      tourFilters: { title: 'Find your journey' },
       aboutPage: {
         eyebrow: 'Get to know us',
         title: 'Discover Egypt. Experience More Than a Journey.',
@@ -150,6 +151,7 @@ const resources = {
         { q: 'ما أفضل وقت لزيارة مصر؟', a: 'من أكتوبر إلى أبريل تكون الأجواء ألطف لمشاهدة المعالم والرحلات النيلية، والبحر الأحمر والإسكندرية مناسبان طوال العام.' },
         { q: 'متى ينبغي أن أخطط للرحلة؟', a: 'ننصح بالحجز قبل ٣ إلى ٦ أشهر لموسم الشتاء أو رحلات الدهبية الخاصة، ويمكن لفريقنا إعداد رحلات مخصصة في وقت أقصر.' },
       ],
+      tourFilters: { title: 'ابحث عن رحلتك' },
       aboutPage: {
         eyebrow: 'تعرّفوا علينا',
         title: 'اكتشف مصر. وعِش أكثر من مجرد رحلة.',
@@ -228,6 +230,7 @@ const resources = {
         { q: '¿Cuál es la mejor época para visitar Egipto?', a: 'De octubre a abril el clima es más agradable para las visitas y los cruceros; el Mar Rojo y Alejandría se disfrutan todo el año.' },
         { q: '¿Con cuánta antelación debo planificar?', a: 'Recomendamos consultar con 3–6 meses de antelación para el invierno o los charters privados, aunque podemos organizar viajes con menos aviso.' },
       ],
+      tourFilters: { title: 'Encuentra tu viaje' },
       aboutPage: {
         eyebrow: 'Conócenos',
         title: 'Descubre Egipto. Vive mucho más que un viaje.',
@@ -306,6 +309,7 @@ const resources = {
         { q: 'Quelle est la meilleure période pour visiter l’Égypte ?', a: 'D’octobre à avril, les températures sont idéales pour les visites et les croisières. La mer Rouge et Alexandrie se visitent toute l’année.' },
         { q: 'Combien de temps à l’avance faut-il planifier ?', a: 'Nous conseillons 3 à 6 mois pour l’hiver ou les dahabiyas privées, mais notre équipe peut organiser des séjours dans des délais plus courts.' },
       ],
+      tourFilters: { title: 'Trouvez votre voyage' },
       aboutPage: {
         eyebrow: 'Faites connaissance avec nous',
         title: 'Découvrez l’Égypte. Vivez bien plus qu’un voyage.',
