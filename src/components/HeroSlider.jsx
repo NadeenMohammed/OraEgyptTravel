@@ -77,7 +77,7 @@ export function HeroSlider() {
   }, []);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = setInterval(nextSlide, SLIDE_DURATION);
     return () => clearInterval(timer);
   }, [paused, nextSlide]);
@@ -161,6 +161,32 @@ export function HeroSlider() {
                   >
                     {t('site.planJourney')}
                   </Link>
+                </div>
+
+                <div className="mt-7 grid grid-cols-4 gap-3 max-w-[360px]" aria-label="Featured journeys">
+                  {HERO_SLIDES.map((item, index) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setCurrent(index)}
+                      aria-label={`Show slide ${index + 1}: ${t(`hero.${item.id}.location`)}`}
+                      aria-current={current === index ? 'true' : undefined}
+                      className="group text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d8b777]"
+                    >
+                      <span className="block h-[2px] bg-white/30 overflow-hidden">
+                        <span
+                          className={`block h-full bg-[#d8b777] transition-[width] duration-500 ${
+                            current === index ? 'w-full' : 'w-0'
+                          }`}
+                        />
+                      </span>
+                      <span className={`mt-2 hidden sm:block text-[9px] uppercase tracking-[0.12em] truncate transition-colors ${
+                        current === index ? 'text-[#d8b777]' : 'text-white/55 group-hover:text-white/85'
+                      }`}>
+                        {t(`hero.${item.id}.location`).split(',')[0]}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </motion.div>
             </AnimatePresence>
