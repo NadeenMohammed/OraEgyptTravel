@@ -80,7 +80,7 @@ export function AdminApp() {
   } = useLanguage();
   const [admin, setAdmin] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [loginEmail, setLoginEmail] = useState('admin@oraegypttravel.com');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
@@ -310,6 +310,7 @@ export function AdminApp() {
                         type="email"
                         required
                         autoComplete="username"
+                        placeholder="Enter your email"
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                         className="w-full border border-[#d8ccb4] bg-[#fffdf8]/75 px-4 py-3.5 text-sm text-[#102355] placeholder:text-[#9b978c] focus:border-[#b3874e] focus:outline-none focus:ring-2 focus:ring-[#c9a061]/15"
