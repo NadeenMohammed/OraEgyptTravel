@@ -121,8 +121,8 @@ export function HeroSlider() {
       </div>
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pt-32 pb-12 lg:pt-36 lg:pb-14 min-h-[94vh] lg:min-h-[92vh] flex flex-col justify-center">
-        <div className="grid lg:grid-cols-[1.05fr_.95fr] gap-8 items-end lg:items-center">
-          <div className="max-w-[760px]">
+        <div className="grid lg:grid-cols-[1.25fr_.75fr] gap-8 items-end lg:items-center">
+          <div className="max-w-[900px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={slide.id}
@@ -138,7 +138,7 @@ export function HeroSlider() {
                   </span>
                 </div>
 
-                <h1 className="text-balance mt-7 text-[clamp(3.25rem,7.2vw,7.25rem)] leading-[0.84] font-medium tracking-[-0.035em] text-[#fbf9f4]">
+                <h1 className="text-balance mt-7 text-[clamp(3rem,5.8vw,6rem)] leading-[0.9] font-medium tracking-[-0.035em] text-[#fbf9f4]">
                   <span className="block">{heroText('title')}</span>
                   <em className="block mt-2 text-[#d8b777] font-medium">{heroText('highlight')}</em>
                 </h1>
