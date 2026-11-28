@@ -99,26 +99,26 @@ export function HeroSlider() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={slide.id}
-          initial={{ opacity: 0, scale: 1.06 }}
-          animate={{ opacity: 1, scale: 1.01 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.25, ease: 'easeInOut' }}
-          className="absolute inset-0 lg:left-[43%]"
-        >
-          <img
-            src={slide.image}
-            alt={heroText('location')}
-            className="w-full h-full object-cover animate-ken-burns"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#08152f] via-[#08152f]/20 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#08152f]/70 via-transparent to-[#08152f]/25" />
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="hero-split absolute inset-y-0 left-0 hidden lg:block w-[46%] bg-[#08152f]" />
+      <div className="absolute inset-0 overflow-hidden">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={slide.id}
+            initial={{ opacity: 0, scale: 1.06 }}
+            animate={{ opacity: 1, scale: 1.01 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.25, ease: 'easeInOut' }}
+            className="absolute inset-0"
+          >
+            <img
+              src={slide.image}
+              alt={heroText('location')}
+              className="w-full h-full object-cover animate-ken-burns"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#08152f]/90 via-[#08152f]/60 to-[#08152f]/15" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#08152f]/75 via-transparent to-[#08152f]/35" />
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pt-32 pb-12 lg:pt-36 lg:pb-14 min-h-[94vh] lg:min-h-[92vh] flex flex-col justify-center">
         <div className="grid lg:grid-cols-[1.05fr_.95fr] gap-8 items-end lg:items-center">
@@ -198,7 +198,7 @@ export function HeroSlider() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-10 lg:mt-12 bg-[#fbf9f4] text-[#102355] p-3 sm:p-4 shadow-[0_24px_80px_rgba(0,0,0,.22)] grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-end max-w-[820px]"
+          className="mt-7 lg:mt-10 bg-[#fbf9f4] text-[#102355] p-3 sm:p-4 shadow-[0_24px_80px_rgba(0,0,0,.22)] grid grid-cols-2 md:grid-cols-[1fr_1fr_auto] gap-2 items-end max-w-[700px] border-t-2 border-[#c9a061]"
         >
           <div>
             <label className="block px-3 text-[9px] uppercase tracking-[0.2em] text-[#102355]/55 font-bold mb-1">
@@ -217,7 +217,7 @@ export function HeroSlider() {
               ))}
             </select>
           </div>
-          <div className="md:border-l md:border-[#102355]/10">
+          <div className="border-l border-[#102355]/10">
             <label className="block px-3 text-[9px] uppercase tracking-[0.2em] text-[#102355]/55 font-bold mb-1">
               {t('site.experienceType')}
             </label>
@@ -233,7 +233,7 @@ export function HeroSlider() {
               ))}
             </select>
           </div>
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <button
               type="submit"
               className="w-full h-12 inline-flex items-center justify-center gap-2 px-5 bg-[#102355] text-white text-[10px] uppercase tracking-[0.18em] font-bold hover:bg-[#1d3b7a] transition-colors"
@@ -244,7 +244,7 @@ export function HeroSlider() {
         </motion.form>
 
         <div className="absolute right-5 sm:right-8 lg:right-12 bottom-8 hidden md:flex items-center gap-4">
-          <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/70">
+          <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/75">
             <MapPin size={13} className="text-[#d8b777]" />
             {heroText('location')}
           </span>
