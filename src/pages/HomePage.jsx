@@ -34,63 +34,65 @@ export function HomePage() {
   const displayTours = featuredTours.length ? featuredTours : tours.slice(0, 4);
 
   return (
-    <div>
-      {/* 1. Professional Cinematic Hero Slider */}
+    <div className="bg-[#f4f0e7]">
       <HeroSlider />
 
-      {/* 2. Featured Destinations */}
-      <section className="py-20 sm:py-24 max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="editorial-grid py-20 sm:py-28">
+        <div className="max-w-[1320px] mx-auto px-5 sm:px-8">
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div className="grid md:grid-cols-[1fr_auto] items-end gap-6 mb-12">
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-[#D2A058] font-semibold">
+              <div className="flex items-center gap-4">
+                <span className="section-rule" />
+                <p className="text-[10px] uppercase tracking-[0.28em] text-[#9d7437] font-bold">
                 {t('site.iconRegions')}
-              </p>
-              <h2 className="mt-2 font-serif text-3xl sm:text-4xl text-[#102355]">
+                </p>
+              </div>
+              <h2 className="mt-4 font-serif text-5xl sm:text-6xl leading-none text-[#08152f]">
                 {t('site.featuredDestinations')}
               </h2>
             </div>
             <Link
               to="/destinations"
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold text-[#102355] hover:text-[#D2A058] transition-colors"
+              className="group inline-flex items-center gap-3 pb-2 border-b border-[#08152f]/30 text-[10px] uppercase tracking-[0.18em] font-bold text-[#08152f] hover:border-[#b48946] transition-colors"
             >
-              {t('site.viewAllDestinations')} <ArrowRight size={15} />
+              {t('site.viewAllDestinations')} <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {destinations.slice(0, 4).map((dest, idx) => (
             <Reveal key={dest.id} delay={idx * 0.08}>
               <DestinationCard destination={dest} />
             </Reveal>
           ))}
         </div>
+        </div>
       </section>
 
-      {/* 3. Signature Tours */}
-      <section className="py-20 bg-white border-y border-[#D2A058]/25">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="py-20 sm:py-28 bg-[#08152f] text-white">
+        <div className="max-w-[1320px] mx-auto px-5 sm:px-8">
           <Reveal>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+            <div className="grid md:grid-cols-[1fr_auto] items-end gap-6 mb-12">
               <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-[#D2A058] font-semibold">
+                <p className="text-[10px] uppercase tracking-[0.28em] text-[#d8b777] font-bold">
                   {t('site.curatedItineraries')}
                 </p>
-                <h2 className="mt-2 font-serif text-3xl sm:text-4xl text-[#102355]">
+                <h2 className="mt-4 font-serif text-5xl sm:text-6xl leading-none">
                   {t('site.signatureTours')}
                 </h2>
               </div>
               <Link
                 to="/tours"
-                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold text-[#102355] hover:text-[#D2A058] transition-colors"
+                className="group inline-flex items-center gap-3 pb-2 border-b border-white/25 text-[10px] uppercase tracking-[0.18em] font-bold text-white hover:border-[#d8b777] transition-colors"
               >
-                {t('site.browseAllTours')} <ArrowRight size={15} />
+                {t('site.browseAllTours')} <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {displayTours.map((tour, idx) => (
               <Reveal key={tour.id} delay={idx * 0.08}>
                 <TourCard tour={tour} />
@@ -100,20 +102,19 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 4. Three Signature Pillars */}
-      <section className="py-20 sm:py-24 max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="py-20 sm:py-28 max-w-[1320px] mx-auto px-5 sm:px-8">
         <Reveal>
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#D2A058] font-semibold">
+          <div className="max-w-2xl mb-14">
+            <p className="text-[10px] uppercase tracking-[0.28em] text-[#9d7437] font-bold">
               {t('site.waysExperience')}
             </p>
-            <h2 className="mt-2 font-serif text-3xl sm:text-4xl text-[#102355]">
+            <h2 className="mt-4 font-serif text-5xl sm:text-6xl leading-none text-[#08152f]">
               {t('site.threeWorlds')}
             </h2>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 border-y border-[#08152f]/15">
           {[
             {
               icon: Ship,
@@ -135,13 +136,16 @@ export function HomePage() {
             },
           ].map((pillar, idx) => (
             <Reveal key={pillar.title} delay={idx * 0.1}>
-              <div className="h-full p-8 bg-white border border-[#D2A058]/30 rounded-sm hover:border-[#D2A058] hover:shadow-lg transition-all flex flex-col">
-                <pillar.icon size={32} className="text-[#D2A058]" />
-                <h3 className="mt-5 font-serif text-2xl text-[#102355]">{pillar.title}</h3>
-                <p className="mt-3 text-sm text-[#102355]/75 leading-relaxed flex-1">{pillar.desc}</p>
+              <div className={`h-full min-h-[280px] p-7 sm:p-8 flex flex-col ${idx > 0 ? 'md:border-l border-[#08152f]/15' : ''}`}>
+                <div className="flex items-start justify-between">
+                  <pillar.icon size={34} strokeWidth={1.35} className="text-[#b48946]" />
+                  <span className="font-serif text-4xl text-[#08152f]/10">0{idx + 1}</span>
+                </div>
+                <h3 className="mt-8 font-serif text-3xl text-[#08152f]">{pillar.title}</h3>
+                <p className="mt-3 text-sm text-[#08152f]/65 leading-[1.8] flex-1">{pillar.desc}</p>
                 <Link
                   to={pillar.link}
-                  className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] font-bold text-[#102355] hover:text-[#D2A058]"
+                  className="mt-7 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] font-bold text-[#08152f] hover:text-[#9d7437]"
                 >
                   {t('site.exploreExperiences')} <ArrowRight size={14} />
                 </Link>
@@ -151,21 +155,20 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 5. Why Travel With ORA TRAVEL */}
-      <section className="py-20 bg-[#102355] text-white">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="py-20 sm:py-28 bg-[#ede7da]">
+        <div className="max-w-[1320px] mx-auto px-5 sm:px-8">
           <Reveal>
             <div className="max-w-2xl mb-14">
-              <p className="text-xs uppercase tracking-[0.25em] text-[#D2A058] font-semibold">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[#9d7437] font-bold">
                 {t('site.oraStandard')}
               </p>
-              <h2 className="mt-2 font-serif text-3xl sm:text-4xl">
+              <h2 className="mt-4 font-serif text-5xl sm:text-6xl leading-none text-[#08152f]">
                 {t('site.whyOra')}
               </h2>
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
                 icon: Compass,
@@ -184,10 +187,10 @@ export function HomePage() {
               },
             ].map((item, idx) => (
               <Reveal key={item.title} delay={idx * 0.1}>
-                <div className="h-full p-7 bg-white/5 border border-[#D2A058]/25 rounded-sm hover:bg-white/10 transition-colors">
-                  <item.icon size={28} className="text-[#D2A058]" />
-                  <h3 className="mt-4 font-serif text-xl">{item.title}</h3>
-                  <p className="mt-2.5 text-sm text-white/75 leading-relaxed">{item.desc}</p>
+                <div className="h-full min-h-[240px] p-8 bg-[#f8f5ef] border border-[#08152f]/10 hover:-translate-y-1 hover:shadow-xl transition-all">
+                  <item.icon size={30} strokeWidth={1.35} className="text-[#b48946]" />
+                  <h3 className="mt-8 font-serif text-3xl text-[#08152f]">{item.title}</h3>
+                  <p className="mt-3 text-sm text-[#08152f]/65 leading-[1.8]">{item.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -195,49 +198,47 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 6. Verified Guest Reviews (Integration-Ready) */}
-      <section className="py-20 bg-[#FAF8F4] border-b border-[#D2A058]/25">
+      <section className="py-16 bg-[#fbf9f4] border-y border-[#08152f]/10">
         <Reveal>
           <div className="max-w-4xl mx-auto px-5 sm:px-8 text-center">
-            <MessageSquareQuote size={34} className="mx-auto text-[#D2A058]" />
-            <p className="mt-3 text-xs uppercase tracking-[0.25em] text-[#102355] font-semibold">
+            <MessageSquareQuote size={30} strokeWidth={1.35} className="mx-auto text-[#b48946]" />
+            <p className="mt-4 text-[10px] uppercase tracking-[0.28em] text-[#08152f] font-bold">
               {t('site.verifiedReflections')}
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-[#102355]">
+            <h2 className="mt-3 font-serif text-4xl sm:text-5xl text-[#08152f]">
               {t('site.verifiedReviews')}
             </h2>
-            <p className="mt-4 text-sm text-[#102355]/70 leading-relaxed max-w-2xl mx-auto">
+            <p className="mt-4 text-sm text-[#08152f]/60 leading-relaxed max-w-2xl mx-auto">
               {t('site.reviewDesc')}
             </p>
           </div>
         </Reveal>
       </section>
 
-      {/* 7. Travel Journal */}
-      <section className="py-20 max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="py-20 sm:py-28 max-w-[1320px] mx-auto px-5 sm:px-8">
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div className="grid md:grid-cols-[1fr_auto] items-end gap-6 mb-12">
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-[#D2A058] font-semibold">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[#9d7437] font-bold">
                 {t('site.travelJournal')}
               </p>
-              <h2 className="mt-2 font-serif text-3xl sm:text-4xl text-[#102355]">
+              <h2 className="mt-4 font-serif text-5xl sm:text-6xl leading-none text-[#08152f]">
                 {t('site.storiesGuides')}
               </h2>
             </div>
             <Link
               to="/blog"
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold text-[#102355] hover:text-[#D2A058]"
+              className="group inline-flex items-center gap-3 pb-2 border-b border-[#08152f]/30 text-[10px] uppercase tracking-[0.18em] font-bold text-[#08152f] hover:border-[#b48946]"
             >
-              {t('site.readArticles')} <ArrowRight size={15} />
+              {t('site.readArticles')} <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {posts.slice(0, 3).map((post, idx) => (
             <Reveal key={post.id} delay={idx * 0.08}>
-              <article className="h-full bg-white border border-[#D2A058]/30 rounded-sm overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+              <article className="h-full bg-[#fbf9f4] border border-[#08152f]/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all">
                 <img
                   src={post.image}
                   alt={translated(post, 'title', i18n.resolvedLanguage)}

@@ -39,8 +39,8 @@ export function Header() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         transparentMode
-          ? 'bg-gradient-to-b from-[#0A1638]/85 to-transparent py-4'
-          : 'bg-white/95 backdrop-blur-md border-b border-[#D2A058]/30 py-3 shadow-sm'
+          ? 'bg-gradient-to-b from-[#08152f]/95 via-[#08152f]/65 to-transparent py-5'
+          : 'bg-[#fbf9f4]/96 backdrop-blur-md border-b border-[#08152f]/10 py-3 shadow-sm'
       }`}
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between">

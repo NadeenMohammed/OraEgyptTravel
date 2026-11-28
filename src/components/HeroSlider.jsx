@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, Compass, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, ArrowUpRight, MapPin } from 'lucide-react';
 import { DESTINATIONS } from '../data/destinations';
 import { TOUR_CATEGORIES } from '../data/tours';
 import { useTranslation } from 'react-i18next';
@@ -95,155 +95,93 @@ export function HeroSlider() {
 
   return (
     <section
-      className="relative min-h-[96vh] flex items-center bg-[#0A1638] text-white overflow-hidden"
+      className="grain relative min-h-[94vh] lg:min-h-[92vh] bg-[#08152f] text-white overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Animated Background Slides with Ken Burns zoom */}
       <AnimatePresence mode="sync">
         <motion.div
           key={slide.id}
-          initial={{ opacity: 0, scale: 1.08 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 1.06 }}
+          animate={{ opacity: 1, scale: 1.01 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.15, ease: 'easeInOut' }}
-          className="absolute inset-0"
+          transition={{ duration: 1.25, ease: 'easeInOut' }}
+          className="absolute inset-0 lg:left-[43%]"
         >
           <img
             src={slide.image}
             alt={heroText('location')}
             className="w-full h-full object-cover animate-ken-burns"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1638]/95 via-[#102355]/70 to-[#0A1638]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A1638]/80 via-transparent to-[#0A1638]/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#08152f] via-[#08152f]/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#08152f]/70 via-transparent to-[#08152f]/25" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Main Hero Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-32 pb-20 w-full">
-        <div className="grid lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-9">
+      <div className="hero-split absolute inset-y-0 left-0 hidden lg:block w-[46%] bg-[#08152f]" />
+
+      <div className="relative z-10 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pt-32 pb-12 lg:pt-36 lg:pb-14 min-h-[94vh] lg:min-h-[92vh] flex flex-col justify-center">
+        <div className="grid lg:grid-cols-[1.05fr_.95fr] gap-8 items-end lg:items-center">
+          <div className="max-w-[760px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={slide.id}
-                initial={{ opacity: 0, y: 26 }}
+                initial={{ opacity: 0, y: 22 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -18 }}
                 transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-[#D2A058]/40 text-[11px] uppercase tracking-[0.26em] text-[#D2A058] font-semibold">
-                  <Sparkles size={13} />
-                  <span>{heroText('eyebrow')}</span>
+                <div className="flex items-center gap-4">
+                  <span className="h-px w-10 bg-[#c9a061]" />
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.28em] text-[#e1c58f] font-bold">
+                    {heroText('eyebrow')}
+                  </span>
                 </div>
 
-                <h1 className="mt-5 font-serif text-4xl sm:text-6xl lg:text-7xl leading-[1.06] font-medium text-white">
-                  {heroText('title')}
-                  <br />
-                  <span className="text-[#D2A058] italic font-normal">{heroText('highlight')}</span>
+                <h1 className="text-balance mt-7 text-[clamp(3.25rem,7.2vw,7.25rem)] leading-[0.84] font-medium tracking-[-0.035em] text-[#fbf9f4]">
+                  <span className="block">{heroText('title')}</span>
+                  <em className="block mt-2 text-[#d8b777] font-medium">{heroText('highlight')}</em>
                 </h1>
 
-                <p className="mt-6 text-base sm:text-lg text-white/95 max-w-2xl leading-relaxed">
+                <p className="mt-7 text-sm sm:text-base lg:text-[17px] text-white/78 max-w-[610px] leading-[1.8]">
                   {heroText('subtitle')}
                 </p>
 
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Link
                     to={slide.ctaLink}
-                    className="px-7 py-4 bg-[#D2A058] text-[#0A1638] text-xs uppercase tracking-[0.2em] font-bold rounded-sm hover:bg-[#c18f48] transition-all shadow-lg hover:shadow-[#D2A058]/30"
+                    className="group inline-flex items-center gap-3 px-6 sm:px-7 py-4 bg-[#c9a061] text-[#08152f] text-[11px] uppercase tracking-[0.18em] font-bold hover:bg-[#dec28c] transition-colors"
                   >
                     {t('site.exploreTours')}
+                    <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                   <Link
                     to="/contact"
-                    className="px-7 py-4 border border-white/45 bg-white/5 backdrop-blur-sm text-white text-xs uppercase tracking-[0.2em] font-semibold rounded-sm hover:bg-white/15 transition-all"
+                    className="px-6 sm:px-7 py-4 border border-white/30 bg-[#08152f]/20 backdrop-blur-sm text-white text-[11px] uppercase tracking-[0.18em] font-bold hover:border-[#c9a061] hover:text-[#dec28c] transition-colors"
                   >
                     {t('site.planJourney')}
                   </Link>
-                  <span className="hidden sm:inline-flex items-center gap-2 text-xs text-[#EFE4D0]/90 ml-2">
-                    <Compass size={15} className="text-[#D2A058]" />
-                    {heroText('location')}
-                  </span>
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
-
-          {/* Desktop Slide Controls */}
-          <div className="hidden lg:flex lg:col-span-3 flex-col items-end gap-4">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={prevSlide}
-                aria-label="Previous slide"
-                className="w-11 h-11 rounded-full border border-white/30 bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-[#D2A058] hover:text-[#0A1638] hover:border-[#D2A058] transition-all"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                type="button"
-                onClick={nextSlide}
-                aria-label="Next slide"
-                className="w-11 h-11 rounded-full border border-white/30 bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-[#D2A058] hover:text-[#0A1638] hover:border-[#D2A058] transition-all"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-            <div className="text-right font-mono text-xs tracking-widest text-white/70">
-              <span className="text-[#D2A058] text-lg font-bold">0{current + 1}</span> / 0{HERO_SLIDES.length}
-            </div>
-          </div>
         </div>
 
-        {/* Slide Indicator Bars */}
-        <div className="mt-10 grid grid-cols-4 gap-3 max-w-xl">
-          {HERO_SLIDES.map((item, idx) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setCurrent(idx)}
-              className="group text-left focus:outline-none"
-              aria-label={`Go to slide ${idx + 1}: ${t(`hero.${item.id}.location`)}`}
-            >
-              <div className="h-1 w-full bg-white/25 rounded-full overflow-hidden">
-                {idx === current ? (
-                  <motion.div
-                    key={`${slide.id}-${paused}`}
-                    initial={{ width: '0%' }}
-                    animate={{ width: paused ? '100%' : '100%' }}
-                    transition={{ duration: paused ? 0.2 : SLIDE_DURATION / 1000, ease: 'linear' }}
-                    className="h-full bg-[#D2A058]"
-                  />
-                ) : (
-                  <div className={`h-full ${idx < current ? 'bg-white/60 w-full' : 'w-0'}`} />
-                )}
-              </div>
-              <span
-                className={`hidden sm:block mt-2 text-[10px] uppercase tracking-[0.16em] truncate transition-colors ${
-                  idx === current ? 'text-[#D2A058] font-semibold' : 'text-white/55 group-hover:text-white/85'
-                }`}
-              >
-                0{idx + 1}. {t(`hero.${item.id}.location`).split(',')[0]}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Interactive Quick Search Bar */}
         <motion.form
           onSubmit={handleQuickSearch}
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-10 bg-white/95 backdrop-blur-md text-[#102355] p-4 sm:p-5 rounded-sm shadow-2xl border-t-2 border-[#D2A058] grid grid-cols-1 md:grid-cols-12 gap-4 items-end max-w-5xl"
+          className="mt-10 lg:mt-12 bg-[#fbf9f4] text-[#102355] p-3 sm:p-4 shadow-[0_24px_80px_rgba(0,0,0,.22)] grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-end max-w-[820px]"
         >
-          <div className="md:col-span-5">
-            <label className="block text-[11px] uppercase tracking-[0.18em] text-[#102355]/65 font-semibold mb-1.5">
+          <div>
+            <label className="block px-3 text-[9px] uppercase tracking-[0.2em] text-[#102355]/55 font-bold mb-1">
               {t('site.destination')}
             </label>
             <select
               value={searchDestination}
               onChange={(e) => setSearchDestination(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#FAF8F4] border border-[#D2A058]/40 text-sm rounded-sm focus:outline-none focus:border-[#102355]"
+              className="w-full px-3 py-2.5 bg-transparent border-0 text-sm font-semibold focus:outline-none"
             >
               <option value="">{t('site.allDestinations')}</option>
               {DESTINATIONS.map((d) => (
@@ -253,14 +191,14 @@ export function HeroSlider() {
               ))}
             </select>
           </div>
-          <div className="md:col-span-4">
-            <label className="block text-[11px] uppercase tracking-[0.18em] text-[#102355]/65 font-semibold mb-1.5">
+          <div className="md:border-l md:border-[#102355]/10">
+            <label className="block px-3 text-[9px] uppercase tracking-[0.2em] text-[#102355]/55 font-bold mb-1">
               {t('site.experienceType')}
             </label>
             <select
               value={searchCategory}
               onChange={(e) => setSearchCategory(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#FAF8F4] border border-[#D2A058]/40 text-sm rounded-sm focus:outline-none focus:border-[#102355]"
+              className="w-full px-3 py-2.5 bg-transparent border-0 text-sm font-semibold focus:outline-none"
             >
               {TOUR_CATEGORIES.map((c, index) => (
                 <option key={c} value={c}>
@@ -269,15 +207,29 @@ export function HeroSlider() {
               ))}
             </select>
           </div>
-          <div className="md:col-span-3">
+          <div>
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#102355] text-white text-xs uppercase tracking-[0.18em] font-semibold rounded-sm hover:bg-[#1B367A] transition-colors h-[42px]"
+              className="w-full h-12 inline-flex items-center justify-center gap-2 px-5 bg-[#102355] text-white text-[10px] uppercase tracking-[0.18em] font-bold hover:bg-[#1d3b7a] transition-colors"
             >
-              <Search size={15} className="text-[#D2A058]" /> {t('site.findJourneys')}
+              <Search size={15} className="text-[#d8b777]" /> {t('site.findJourneys')}
             </button>
           </div>
         </motion.form>
+
+        <div className="absolute right-5 sm:right-8 lg:right-12 bottom-8 hidden md:flex items-center gap-4">
+          <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/70">
+            <MapPin size={13} className="text-[#d8b777]" />
+            {heroText('location')}
+          </span>
+          <button type="button" onClick={prevSlide} aria-label="Previous slide" className="w-10 h-10 border border-white/25 flex items-center justify-center hover:bg-white hover:text-[#08152f] transition-colors">
+            <ChevronLeft size={17} />
+          </button>
+          <span className="text-xs tracking-[0.16em] text-white/60">0{current + 1} / 0{HERO_SLIDES.length}</span>
+          <button type="button" onClick={nextSlide} aria-label="Next slide" className="w-10 h-10 bg-[#c9a061] text-[#08152f] flex items-center justify-center hover:bg-[#dec28c] transition-colors">
+            <ChevronRight size={17} />
+          </button>
+        </div>
       </div>
     </section>
   );
