@@ -122,7 +122,7 @@ export function HeroSlider() {
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pt-32 pb-12 lg:pt-36 lg:pb-14 min-h-[94vh] lg:min-h-[92vh] flex flex-col justify-center">
         <div className="grid lg:grid-cols-[1.05fr_.95fr] gap-8 items-end lg:items-center">
-          <div className="max-w-[860px]">
+          <div className="max-w-[960px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={slide.id}
