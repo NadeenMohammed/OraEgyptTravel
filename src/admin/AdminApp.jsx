@@ -627,12 +627,12 @@ export function AdminApp() {
   ];
 
   return (
-    <div className="admin-console min-h-screen bg-[#f3f6f8] flex flex-col lg:flex-row text-[#17344d]">
+    <div className="admin-console min-h-screen bg-[#f4f0e7] flex flex-col lg:flex-row text-[#102355]">
       {/* Standalone Sidebar */}
-      <aside className="admin-sidebar w-full lg:w-[272px] lg:min-h-screen lg:h-screen lg:sticky lg:top-0 bg-[#0b2947] text-white flex flex-col shrink-0">
+      <aside className="admin-sidebar w-full lg:w-[272px] lg:min-h-screen lg:h-screen lg:sticky lg:top-0 bg-[#102355] text-white flex flex-col shrink-0">
         <div className="p-6 border-b border-white/10">
           <OraBrandLogo variant="header" onDark />
-          <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-[#e2b45f] font-bold">
+          <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-[#c9a061] font-bold">
             Admin Control Panel
           </p>
         </div>
@@ -652,15 +652,15 @@ export function AdminApp() {
                   : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
               }`}
             >
-              {tab === item.id && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[#e2b45f]" />}
+              {tab === item.id && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[#c9a061]" />}
               <span className="inline-flex items-center gap-2.5">
-                <item.icon size={17} className={tab === item.id ? 'text-[#e2b45f]' : 'text-white/55'} />
+                <item.icon size={17} className={tab === item.id ? 'text-[#c9a061]' : 'text-white/55'} />
                 {item.label}
               </span>
               {item.badge > 0 && (
                 <span
                   className={`text-[10px] min-w-5 text-center px-1.5 py-0.5 rounded-full font-bold ${
-                    tab === item.id ? 'bg-[#e2b45f] text-[#0b2947]' : 'bg-white/10 text-white/75'
+                    tab === item.id ? 'bg-[#c9a061] text-[#102355]' : 'bg-white/10 text-white/75'
                   }`}
                 >
                   {item.badge}
@@ -690,10 +690,10 @@ export function AdminApp() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="admin-topbar bg-white/95 border-b border-[#e7edf1] px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
+        <header className="admin-topbar bg-[#fbf9f4] border-b border-[#e3dac8] px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.2em] text-[#b47b28] font-bold">ORA MANAGEMENT</p>
-            <h1 className="mt-1 font-serif text-2xl text-[#17344d]">
+            <p className="text-[9px] uppercase tracking-[0.2em] text-[#986d32] font-bold">ORA MANAGEMENT</p>
+            <h1 className="mt-1 font-serif text-2xl text-[#102355]">
               {NAV.find((n) => n.id === tab)?.label}
             </h1>
           </div>
@@ -711,10 +711,10 @@ export function AdminApp() {
               <RefreshCw size={14} /> Refresh
             </button>
             <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-slate-200">
-              <span className="h-9 w-9 rounded-full bg-[#e8f0f3] text-[#17344d] flex items-center justify-center text-xs font-bold">
+              <span className="h-9 w-9 rounded-full bg-[#f4f0e7] text-[#102355] flex items-center justify-center text-xs font-bold">
                 {(admin.email || 'A').slice(0, 1).toUpperCase()}
               </span>
-              <span className="max-w-[160px] truncate text-xs font-semibold text-[#17344d]">{admin.email}</span>
+              <span className="max-w-[160px] truncate text-xs font-semibold text-[#102355]">{admin.email}</span>
             </div>
           </div>
         </header>
@@ -723,13 +723,13 @@ export function AdminApp() {
           {/* ================= OVERVIEW TAB ================= */}
           {tab === 'overview' && (
             <div className="space-y-7 max-w-[1500px] mx-auto">
-              <section className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#0d3450] via-[#154661] to-[#0c2947] px-6 py-7 sm:px-9 sm:py-8 text-white shadow-[0_16px_38px_rgba(11,41,71,0.16)]">
+              <section className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#08152f] via-[#102355] to-[#08152f] px-6 py-7 sm:px-9 sm:py-8 text-white shadow-[0_16px_38px_rgba(16,35,85,0.18)]">
                 <div className="absolute -right-10 -top-20 h-64 w-64 rounded-full border border-white/10" />
                 <div className="absolute -right-1 top-4 h-44 w-44 rounded-full border border-white/10" />
-                <div className="absolute right-16 -bottom-28 h-56 w-56 rounded-full bg-[#e2b45f]/10 blur-2xl" />
+                <div className="absolute right-16 -bottom-28 h-56 w-56 rounded-full bg-[#c9a061]/10 blur-2xl" />
                 <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                   <div>
-                    <p className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-[#e9bd70]">
+                    <p className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-[#c9a061]">
                       <Sparkles size={14} /> {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
                     <h2 className="mt-3 font-serif text-3xl sm:text-4xl leading-tight">
@@ -742,7 +742,7 @@ export function AdminApp() {
                   <button
                     type="button"
                     onClick={() => setTab('tours')}
-                    className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#e2b45f] px-5 py-3 text-xs font-bold text-[#14334c] shadow-lg shadow-black/10 hover:bg-[#efc879] transition-colors"
+                    className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#c9a061] px-5 py-3 text-xs font-bold text-[#102355] shadow-lg shadow-black/10 hover:bg-[#d7b77f] transition-colors"
                   >
                     <Plus size={16} /> Manage Tours
                   </button>
@@ -751,54 +751,54 @@ export function AdminApp() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {[
-                  { label: 'Total Tours', value: stats?.counts?.tours ?? tours.length, sub: `${stats?.counts?.destinations ?? destinations.length} destinations`, icon: Compass, tone: 'bg-[#edf4f7] text-[#2d6d86]' },
-                  { label: 'Total Bookings', value: stats?.counts?.bookings ?? bookings.length, sub: 'All guest requests', icon: CalendarCheck2, tone: 'bg-[#f3effa] text-[#7657a1]' },
-                  { label: 'Pending Bookings', value: stats?.counts?.newBookings ?? 0, sub: 'Awaiting your response', icon: Clock3, tone: 'bg-[#fff4e5] text-[#b47b28]' },
-                  { label: 'Total Inquiries', value: stats?.counts?.contacts ?? contacts.length, sub: `${stats?.counts?.newContacts ?? 0} new messages`, icon: Mail, tone: 'bg-[#eaf5ef] text-[#438568]' },
-                  { label: 'Published Blogs', value: posts.length, sub: 'Travel journal articles', icon: FileText, tone: 'bg-[#f8eef0] text-[#a75d71]' },
-                  { label: 'Unread Alerts', value: (stats?.counts?.newBookings ?? 0) + (stats?.counts?.newContacts ?? 0), sub: 'Bookings & messages', icon: Users, tone: 'bg-[#eef1f7] text-[#546a92]' },
+                  { label: 'Total Tours', value: stats?.counts?.tours ?? tours.length, sub: `${stats?.counts?.destinations ?? destinations.length} destinations`, icon: Compass, tone: 'bg-[#f4f0e7] text-[#986d32]' },
+                  { label: 'Total Bookings', value: stats?.counts?.bookings ?? bookings.length, sub: 'All guest requests', icon: CalendarCheck2, tone: 'bg-[#eff0f5] text-[#102355]' },
+                  { label: 'Pending Bookings', value: stats?.counts?.newBookings ?? 0, sub: 'Awaiting your response', icon: Clock3, tone: 'bg-[#f8f0df] text-[#986d32]' },
+                  { label: 'Total Inquiries', value: stats?.counts?.contacts ?? contacts.length, sub: `${stats?.counts?.newContacts ?? 0} new messages`, icon: Mail, tone: 'bg-[#f4f0e7] text-[#102355]' },
+                  { label: 'Published Blogs', value: posts.length, sub: 'Travel journal articles', icon: FileText, tone: 'bg-[#f8f0df] text-[#986d32]' },
+                  { label: 'Unread Alerts', value: (stats?.counts?.newBookings ?? 0) + (stats?.counts?.newContacts ?? 0), sub: 'Bookings & messages', icon: Users, tone: 'bg-[#eff0f5] text-[#102355]' },
                 ].map((card) => (
-                  <div key={card.label} className="rounded-2xl border border-[#e6edf0] bg-white p-5 shadow-[0_4px_18px_rgba(20,50,70,0.035)] transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(20,50,70,0.08)]">
+                  <div key={card.label} className="rounded-2xl border border-[#e3dac8] bg-[#fbf9f4] p-5 shadow-[0_4px_18px_rgba(16,35,85,0.035)] transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(16,35,85,0.08)]">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-[10px] uppercase tracking-[0.13em] text-slate-500 font-bold">{card.label}</p>
-                        <p className="mt-3 font-serif text-3xl font-semibold text-[#17344d]">{card.value}</p>
+                        <p className="mt-3 font-serif text-3xl font-semibold text-[#102355]">{card.value}</p>
                       </div>
                       <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${card.tone}`}>
                         <card.icon size={19} />
                       </span>
                     </div>
-                    <p className="mt-3 border-t border-slate-100 pt-3 text-[11px] text-slate-500">{card.sub}</p>
+                    <p className="mt-3 border-t border-[#e9e1d3] pt-3 text-[11px] text-slate-500">{card.sub}</p>
                   </div>
                 ))}
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.8fr)] gap-5">
-                <section className="min-w-0 rounded-2xl border border-[#e6edf0] bg-white p-5 sm:p-6 shadow-[0_4px_18px_rgba(20,50,70,0.035)]">
+                <section className="min-w-0 rounded-2xl border border-[#e3dac8] bg-[#fbf9f4] p-5 sm:p-6 shadow-[0_4px_18px_rgba(16,35,85,0.035)]">
                   <div className="mb-5 flex items-center justify-between gap-3">
                     <div>
-                      <h2 className="font-serif text-xl text-[#17344d]">Recent Bookings</h2>
+                      <h2 className="font-serif text-xl text-[#102355]">Recent Bookings</h2>
                       <p className="mt-1 text-xs text-slate-500">The latest guest requests across your tours.</p>
                     </div>
-                    <button type="button" onClick={() => setTab('bookings')} className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-bold text-[#31758b] hover:text-[#17344d]">
+                    <button type="button" onClick={() => setTab('bookings')} className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-bold text-[#986d32] hover:text-[#102355]">
                       View all <ArrowRight size={14} />
                     </button>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[560px] text-left text-xs">
                       <thead>
-                        <tr className="border-y border-slate-100 text-[9px] uppercase tracking-[0.12em] text-slate-400">
+                        <tr className="border-y border-[#e9e1d3] text-[9px] uppercase tracking-[0.12em] text-slate-400">
                           <th className="py-3 pr-3 font-bold">Guest</th>
                           <th className="py-3 px-3 font-bold">Tour / Trip</th>
                           <th className="py-3 px-3 font-bold">Travel Date</th>
                           <th className="py-3 pl-3 font-bold">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-[#eee7db]">
                         {((stats?.recentBookings?.length ? stats.recentBookings : bookings).slice(0, 4)).map((booking) => (
-                          <tr key={booking.id} className="hover:bg-[#f8fafb]">
+                          <tr key={booking.id} className="hover:bg-[#f4f0e7]">
                             <td className="py-3.5 pr-3">
-                              <p className="font-semibold text-[#17344d]">{booking.fullName}</p>
+                              <p className="font-semibold text-[#102355]">{booking.fullName}</p>
                               <p className="mt-1 text-[10px] text-slate-400">{booking.email}</p>
                             </td>
                             <td className="px-3 py-3.5 text-slate-600">{booking.tourTitle || 'Custom Journey'}</td>
@@ -820,32 +820,32 @@ export function AdminApp() {
                   </div>
                 </section>
 
-                <section className="rounded-2xl border border-[#e6edf0] bg-white p-5 sm:p-6 shadow-[0_4px_18px_rgba(20,50,70,0.035)]">
+                <section className="rounded-2xl border border-[#e3dac8] bg-[#fbf9f4] p-5 sm:p-6 shadow-[0_4px_18px_rgba(16,35,85,0.035)]">
                   <div className="mb-5">
-                    <h2 className="font-serif text-xl text-[#17344d]">Quick Actions</h2>
+                    <h2 className="font-serif text-xl text-[#102355]">Quick Actions</h2>
                     <p className="mt-1 text-xs text-slate-500">Jump straight into your daily tasks.</p>
                   </div>
                   <div className="space-y-2.5">
                     {[
-                      { label: 'Manage bookings', helper: 'Review guest requests', icon: CalendarCheck2, target: 'bookings', tone: 'bg-[#eef4f7] text-[#34748a]' },
-                      { label: 'Manage tours', helper: 'Edit itineraries & pricing', icon: Compass, target: 'tours', tone: 'bg-[#fff5e8] text-[#b47b28]' },
-                      { label: 'Update destinations', helper: 'Refresh destination pages', icon: MapPin, target: 'destinations', tone: 'bg-[#edf5f0] text-[#438568]' },
-                      { label: 'Edit travel journal', helper: 'Publish stories & guides', icon: FileText, target: 'blog', tone: 'bg-[#f8eff1] text-[#a75d71]' },
+                      { label: 'Manage bookings', helper: 'Review guest requests', icon: CalendarCheck2, target: 'bookings', tone: 'bg-[#eff0f5] text-[#102355]' },
+                      { label: 'Manage tours', helper: 'Edit itineraries & pricing', icon: Compass, target: 'tours', tone: 'bg-[#f4f0e7] text-[#986d32]' },
+                      { label: 'Update destinations', helper: 'Refresh destination pages', icon: MapPin, target: 'destinations', tone: 'bg-[#f4f0e7] text-[#102355]' },
+                      { label: 'Edit travel journal', helper: 'Publish stories & guides', icon: FileText, target: 'blog', tone: 'bg-[#f8f0df] text-[#986d32]' },
                     ].map((action) => (
                       <button
                         key={action.target}
                         type="button"
                         onClick={() => setTab(action.target)}
-                        className="group flex w-full items-center gap-3 rounded-xl border border-slate-100 p-3 text-left hover:border-[#d7e3e8] hover:bg-[#fbfcfc] transition-colors"
+                        className="group flex w-full items-center gap-3 rounded-xl border border-[#eee7db] p-3 text-left hover:border-[#d8ccb4] hover:bg-[#f4f0e7] transition-colors"
                       >
                         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${action.tone}`}>
                           <action.icon size={17} />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-xs font-bold text-[#17344d]">{action.label}</span>
+                          <span className="block text-xs font-bold text-[#102355]">{action.label}</span>
                           <span className="mt-1 block text-[10px] text-slate-400">{action.helper}</span>
                         </span>
-                        <ArrowRight size={15} className="text-slate-300 group-hover:translate-x-0.5 group-hover:text-[#31758b] transition-all" />
+                        <ArrowRight size={15} className="text-slate-300 group-hover:translate-x-0.5 group-hover:text-[#986d32] transition-all" />
                       </button>
                     ))}
                   </div>

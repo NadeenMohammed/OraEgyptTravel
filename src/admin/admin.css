@@ -1,5 +1,5 @@
 .admin-console {
-  color: #17344d;
+  color: #102355;
 }
 
 .admin-console .rounded-sm {
@@ -9,23 +9,23 @@
 .admin-console input:not([type='checkbox']):not([type='radio']):not([type='file']),
 .admin-console textarea,
 .admin-console select {
-  border-color: #dce5ea;
+  border-color: #e3dac8;
   border-radius: 0.7rem;
-  color: #17344d;
+  color: #102355;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .admin-console input:not([type='checkbox']):not([type='radio']):not([type='file']):focus,
 .admin-console textarea:focus,
 .admin-console select:focus {
-  border-color: #31758b;
+  border-color: #c9a061;
   outline: none;
-  box-shadow: 0 0 0 3px rgb(49 117 139 / 12%);
+  box-shadow: 0 0 0 3px rgb(201 160 97 / 16%);
 }
 
 .admin-console input[type='checkbox'],
 .admin-console input[type='radio'] {
-  accent-color: #31758b;
+  accent-color: #986d32;
 }
 
 .admin-console textarea {
