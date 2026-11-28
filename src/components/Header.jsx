@@ -40,7 +40,7 @@ export function Header() {
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         transparentMode
           ? 'bg-gradient-to-b from-[#08152f]/95 via-[#08152f]/65 to-transparent py-5'
-          : 'bg-[#fbf9f4]/96 backdrop-blur-md border-b border-[#08152f]/10 py-3 shadow-sm'
+          : 'bg-[#fbf9f4] border-b border-[#08152f]/15 py-3 shadow-[0_8px_24px_rgba(8,21,47,0.12)]'
       }`}
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between">
@@ -54,14 +54,14 @@ export function Header() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `text-sm tracking-wide transition-colors ${
+                `text-sm font-semibold tracking-wide transition-colors ${
                   transparentMode
                     ? isActive
                       ? 'text-[#D2A058] font-semibold'
                       : 'text-white/90 hover:text-[#D2A058]'
                     : isActive
-                      ? 'text-[#D2A058] font-semibold'
-                      : 'text-[#102355]/85 hover:text-[#D2A058]'
+                      ? 'text-[#805927] font-bold'
+                      : 'text-[#08152f] hover:text-[#805927]'
                 }`
               }
             >
@@ -82,7 +82,7 @@ export function Header() {
         <button
           type="button"
           onClick={() => setMobileOpen((prev) => !prev)}
-          className={`lg:hidden p-2 rounded-sm ${transparentMode ? 'text-white' : 'text-[#102355]'}`}
+          className={`lg:hidden p-2 rounded-sm ${transparentMode ? 'text-white' : 'text-[#08152f]'}`}
           aria-label="Toggle Menu"
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}

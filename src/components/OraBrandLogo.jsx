@@ -30,10 +30,10 @@ export function OraBrandLogo({ variant = 'header', onDark = false, className = '
       />
       <div className="flex flex-col leading-none">
         <div className="font-serif text-lg sm:text-xl tracking-[0.12em] font-bold">
-          <span className="text-[#D2A058]">ORA</span>
+          <span className="text-[#986d32]">ORA</span>
           <span className="text-[#102355]">TRAVEL</span>
         </div>
-        <span className="text-[8.5px] tracking-[0.26em] uppercase text-[#B88346] font-semibold mt-0.5">
+        <span className="text-[8.5px] tracking-[0.26em] uppercase text-[#805927] font-semibold mt-0.5">
           Descubre. Viaja. Vive.
         </span>
       </div>
