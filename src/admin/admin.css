@@ -1,0 +1,66 @@
+.admin-console {
+  color: #17344d;
+}
+
+.admin-console .rounded-sm {
+  border-radius: 0.75rem;
+}
+
+.admin-console input:not([type='checkbox']):not([type='radio']):not([type='file']),
+.admin-console textarea,
+.admin-console select {
+  border-color: #dce5ea;
+  border-radius: 0.7rem;
+  color: #17344d;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.admin-console input:not([type='checkbox']):not([type='radio']):not([type='file']):focus,
+.admin-console textarea:focus,
+.admin-console select:focus {
+  border-color: #31758b;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(49 117 139 / 12%);
+}
+
+.admin-console input[type='checkbox'],
+.admin-console input[type='radio'] {
+  accent-color: #31758b;
+}
+
+.admin-console textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.admin-console table th {
+  font-weight: 700;
+}
+
+.admin-console table td {
+  vertical-align: middle;
+}
+
+.admin-sidebar {
+  z-index: 20;
+}
+
+.admin-login input {
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+@media (max-width: 1023px) {
+  .admin-sidebar {
+    position: relative;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-console *,
+  .admin-login * {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

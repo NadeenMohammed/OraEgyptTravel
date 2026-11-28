@@ -19,7 +19,12 @@ import {
   CheckCircle2,
   Lock,
   Eye,
+  EyeOff,
   Send,
+  ArrowRight,
+  Clock3,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import {
   adminApi,
@@ -33,6 +38,7 @@ import {
 } from '../services/api';
 import { OraBrandLogo } from '../components/OraBrandLogo';
 import { useLanguage } from '../i18n';
+import './admin.css';
 
 const STATUS_BADGE = {
   NEW: 'bg-amber-100 text-amber-800 border-amber-300',
@@ -78,6 +84,7 @@ export function AdminApp() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const [tab, setTab] = useState('overview');
   const [stats, setStats] = useState(null);
@@ -197,8 +204,11 @@ export function AdminApp() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-[#0A1638] text-white flex items-center justify-center">
-        Verifying admin session...
+      <div className="min-h-screen bg-[#08152f] text-white flex items-center justify-center">
+        <div className="flex items-center gap-3 text-sm text-white/75">
+          <span className="h-2 w-2 rounded-full bg-[#c9a061] animate-pulse" />
+          Verifying admin session...
+        </div>
       </div>
     );
   }
@@ -206,65 +216,134 @@ export function AdminApp() {
   // ================= STANDALONE LOGIN SCREEN =================
   if (!admin) {
     return (
-      <div className="min-h-screen bg-[#0A1638] flex items-center justify-center p-5">
-        <div className="w-full max-w-md bg-white rounded-sm shadow-2xl p-8 border-t-4 border-[#D2A058]">
-          <div className="flex justify-center mb-6">
-            <OraBrandLogo variant="full" />
-          </div>
-          <div className="text-center mb-6">
-            <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.22em] text-[#B88346] font-bold">
-              <Lock size={13} /> Admin Portal
-            </span>
-            <h1 className="mt-1 font-serif text-2xl text-[#102355]">Sign In to Dashboard</h1>
-          </div>
-
-          {loginError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
-              {loginError}
+      <div className="admin-login min-h-screen bg-[#fbf9f4] grid lg:grid-cols-2">
+        <section className="relative min-h-[360px] lg:min-h-screen overflow-hidden bg-[#08152f] text-white">
+          <img
+            src="https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1600&q=85"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-35"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#08264a]/95 via-[#0d3450]/85 to-[#08152f]/95" />
+          <div className="relative z-10 min-h-[360px] lg:min-h-screen p-7 sm:p-10 lg:p-14 flex flex-col justify-between">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] sm:text-xs uppercase tracking-[0.14em] font-bold text-white/90 backdrop-blur-md">
+              <Sparkles size={14} className="text-[#e7b554]" />
+              ORA EGYPT TRAVEL — ADMIN PORTAL
             </div>
-          )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs uppercase tracking-[0.14em] text-[#102355]/75 mb-1.5 font-semibold">
-                Admin Email
-              </label>
-              <input
-                type="email"
-                required
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 border border-[#D2A058]/50 rounded-sm text-sm focus:outline-none focus:border-[#102355]"
-              />
+            <div className="max-w-xl py-10 lg:py-0">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.28em] text-[#e7b554] font-bold">
+                ORA EGYPT TRAVEL MANAGEMENT
+              </p>
+              <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl leading-[0.98] text-balance">
+                Manage Tours, Custom Trips, Bookings &amp; SEO in One Place.
+              </h1>
+              <p className="mt-5 max-w-lg text-sm sm:text-base text-white/70 leading-relaxed">
+                Control your Egypt travel content and guest inquiries from one secure workspace.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs text-white/85">
+                  <ShieldCheck size={15} className="text-[#e7b554]" />
+                  Protected Admin Access
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs text-white/85">
+                  <Clock3 size={15} className="text-[#e7b554]" />
+                  Secure Session
+                </span>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-[0.14em] text-[#102355]/75 mb-1.5 font-semibold">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 border border-[#D2A058]/50 rounded-sm text-sm focus:outline-none focus:border-[#102355]"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loginLoading}
-              className="w-full py-3 bg-[#102355] text-white text-xs uppercase tracking-[0.2em] font-bold rounded-sm hover:bg-[#1B367A] transition-colors disabled:opacity-60"
-            >
-              {loginLoading ? 'Signing In...' : 'Enter Admin Dashboard'}
-            </button>
-          </form>
 
-          <div className="mt-6 pt-4 border-t border-[#EFE4D0] text-center">
-            <Link to="/" className="text-xs text-[#102355]/70 hover:text-[#D2A058]">
-              ← Return to Public Website
-            </Link>
+            <div className="flex items-center justify-between gap-4 text-[11px] text-white/55">
+              <span>© {new Date().getFullYear()} ORA Egypt Travel · Cairo, Egypt</span>
+              <Link to="/" className="text-[#e7b554] hover:text-white transition-colors">
+                ← Back to Website
+              </Link>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section className="flex items-center justify-center px-5 py-12 sm:px-10 lg:px-14">
+          <div className="w-full max-w-lg rounded-[28px] border border-[#e5e9ef] bg-white p-7 sm:p-10 shadow-[0_24px_70px_rgba(8,21,47,0.12)]">
+            <div className="flex justify-center mb-6">
+              <OraBrandLogo variant="full" />
+            </div>
+            <div className="text-center mb-8">
+              <h2 className="font-serif text-3xl text-[#102d49]">Dashboard Sign In</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Enter your administrator credentials to access the control panel.
+              </p>
+            </div>
+
+            {loginError && (
+              <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {loginError}
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div>
+                <label htmlFor="admin-email" className="mb-2 block text-[11px] uppercase tracking-[0.14em] text-[#254665] font-bold">
+                  Admin Email
+                </label>
+                <div className="relative">
+                  <Mail size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#d39127]" />
+                  <input
+                    id="admin-email"
+                    type="email"
+                    required
+                    autoComplete="username"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-[#fffdfa] py-3.5 pl-11 pr-4 text-sm text-[#102d49] focus:outline-none focus:ring-4 focus:ring-[#d99b2b]/10 focus:border-[#d99b2b]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="admin-password" className="mb-2 block text-[11px] uppercase tracking-[0.14em] text-[#254665] font-bold">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#d39127]" />
+                  <input
+                    id="admin-password"
+                    type={showLoginPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="current-password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full rounded-xl border border-slate-200 bg-[#fffdfa] py-3.5 pl-11 pr-12 text-sm text-[#102d49] focus:outline-none focus:ring-4 focus:ring-[#d99b2b]/10 focus:border-[#d99b2b]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword((visible) => !visible)}
+                    aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-400 hover:text-[#102d49]"
+                  >
+                    {showLoginPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#f3aa24] to-[#dc8e12] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_18px_rgba(216,142,18,0.24)] hover:brightness-105 transition disabled:opacity-60"
+              >
+                {loginLoading ? 'Signing In...' : 'Sign In to Dashboard'}
+                {!loginLoading && <ArrowRight size={17} />}
+              </button>
+            </form>
+
+            <div className="mt-7 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <span className="inline-flex items-center gap-2 text-slate-400">
+                <Clock3 size={14} className="text-[#d39127]" />
+                Secure administrator session
+              </span>
+              <Link to="/" className="font-semibold text-[#254665] hover:text-[#d39127] transition-colors">
+                Visit Website →
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
@@ -524,36 +603,40 @@ export function AdminApp() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F4F6FA] flex flex-col lg:flex-row text-[#102355]">
+    <div className="admin-console min-h-screen bg-[#f3f6f8] flex flex-col lg:flex-row text-[#17344d]">
       {/* Standalone Sidebar */}
-      <aside className="w-full lg:w-64 bg-[#0A1638] text-white flex flex-col shrink-0">
-        <div className="p-5 border-b border-white/10">
+      <aside className="admin-sidebar w-full lg:w-[272px] lg:min-h-screen lg:h-screen lg:sticky lg:top-0 bg-[#0b2947] text-white flex flex-col shrink-0">
+        <div className="p-6 border-b border-white/10">
           <OraBrandLogo variant="header" onDark />
-          <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-[#D2A058] font-semibold">
+          <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-[#e2b45f] font-bold">
             Admin Control Panel
           </p>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1 overflow-x-auto lg:overflow-visible flex lg:flex-col gap-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-x-auto lg:overflow-y-auto lg:overflow-x-hidden flex lg:flex-col gap-1">
+          <p className="hidden lg:block px-3 pb-2 pt-1 text-[9px] uppercase tracking-[0.2em] text-white/40 font-bold">
+            Workspace
+          </p>
           {NAV.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-sm text-sm transition-colors whitespace-nowrap ${
+              className={`relative flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl text-[13px] transition-all whitespace-nowrap ${
                 tab === item.id
-                  ? 'bg-[#D2A058] text-[#0A1638] font-bold'
-                  : 'text-white/80 hover:bg-white/10'
+                  ? 'bg-white/10 text-white font-semibold shadow-inner'
+                  : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
               }`}
             >
+              {tab === item.id && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[#e2b45f]" />}
               <span className="inline-flex items-center gap-2.5">
-                <item.icon size={17} />
+                <item.icon size={17} className={tab === item.id ? 'text-[#e2b45f]' : 'text-white/55'} />
                 {item.label}
               </span>
               {item.badge > 0 && (
                 <span
-                  className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                    tab === item.id ? 'bg-[#0A1638] text-[#D2A058]' : 'bg-[#D2A058]/20 text-[#D2A058]'
+                  className={`text-[10px] min-w-5 text-center px-1.5 py-0.5 rounded-full font-bold ${
+                    tab === item.id ? 'bg-[#e2b45f] text-[#0b2947]' : 'bg-white/10 text-white/75'
                   }`}
                 >
                   {item.badge}
@@ -567,14 +650,14 @@ export function AdminApp() {
           <Link
             to="/"
             target="_blank"
-            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs bg-white/10 hover:bg-white/20 rounded-sm text-white/90"
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs bg-white/[0.07] hover:bg-white/[0.12] rounded-xl text-white/80 transition-colors"
           >
             <ExternalLink size={14} /> View Live Website
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs text-red-300 hover:bg-red-500/20 rounded-sm"
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs text-white/55 hover:text-red-200 hover:bg-red-500/10 rounded-xl transition-colors"
           >
             <LogOut size={14} /> Sign Out ({admin.email})
           </button>
@@ -583,87 +666,166 @@ export function AdminApp() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between gap-4">
-          <h1 className="font-serif text-2xl text-[#102355] capitalize">
-            {NAV.find((n) => n.id === tab)?.label}
-          </h1>
-          <div className="flex items-center gap-3">
+        <header className="admin-topbar bg-white/95 border-b border-[#e7edf1] px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.2em] text-[#b47b28] font-bold">ORA MANAGEMENT</p>
+            <h1 className="mt-1 font-serif text-2xl text-[#17344d]">
+              {NAV.find((n) => n.id === tab)?.label}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
             {toast && (
-              <span className="inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-sm">
+              <span role="status" className="inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-2 rounded-xl">
                 <CheckCircle2 size={14} /> {toast}
               </span>
             )}
             <button
               type="button"
               onClick={loadAll}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold border border-slate-300 rounded-sm hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold border border-slate-200 bg-white rounded-xl hover:bg-slate-50 transition-colors"
             >
               <RefreshCw size={14} /> Refresh
             </button>
+            <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-slate-200">
+              <span className="h-9 w-9 rounded-full bg-[#e8f0f3] text-[#17344d] flex items-center justify-center text-xs font-bold">
+                {(admin.email || 'A').slice(0, 1).toUpperCase()}
+              </span>
+              <span className="max-w-[160px] truncate text-xs font-semibold text-[#17344d]">{admin.email}</span>
+            </div>
           </div>
         </header>
 
-        <main className="p-6 flex-1 overflow-y-auto">
+        <main className="admin-content p-5 sm:p-8 flex-1 overflow-y-auto">
           {/* ================= OVERVIEW TAB ================= */}
           {tab === 'overview' && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="space-y-7 max-w-[1500px] mx-auto">
+              <section className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#0d3450] via-[#154661] to-[#0c2947] px-6 py-7 sm:px-9 sm:py-8 text-white shadow-[0_16px_38px_rgba(11,41,71,0.16)]">
+                <div className="absolute -right-10 -top-20 h-64 w-64 rounded-full border border-white/10" />
+                <div className="absolute -right-1 top-4 h-44 w-44 rounded-full border border-white/10" />
+                <div className="absolute right-16 -bottom-28 h-56 w-56 rounded-full bg-[#e2b45f]/10 blur-2xl" />
+                <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                  <div>
+                    <p className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-[#e9bd70]">
+                      <Sparkles size={14} /> {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+                    <h2 className="mt-3 font-serif text-3xl sm:text-4xl leading-tight">
+                      Welcome back, {admin.email?.split('@')[0] || 'Admin'}
+                    </h2>
+                    <p className="mt-2 max-w-xl text-sm text-white/70">
+                      Here’s what’s happening across your Egypt travel experience today.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setTab('tours')}
+                    className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#e2b45f] px-5 py-3 text-xs font-bold text-[#14334c] shadow-lg shadow-black/10 hover:bg-[#efc879] transition-colors"
+                  >
+                    <Plus size={16} /> Manage Tours
+                  </button>
+                </div>
+              </section>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {[
-                  { label: 'Booking Inquiries', value: stats?.counts?.bookings ?? 0, sub: `${stats?.counts?.newBookings ?? 0} New` },
-                  { label: 'Contact Messages', value: stats?.counts?.contacts ?? 0, sub: `${stats?.counts?.newContacts ?? 0} New` },
-                  { label: 'Newsletter Subscribers', value: stats?.counts?.subscribers ?? 0, sub: 'Active Emails' },
-                  { label: 'Published Tours', value: stats?.counts?.tours ?? 0, sub: `${stats?.counts?.destinations ?? 0} Destinations` },
+                  { label: 'Total Tours', value: stats?.counts?.tours ?? tours.length, sub: `${stats?.counts?.destinations ?? destinations.length} destinations`, icon: Compass, tone: 'bg-[#edf4f7] text-[#2d6d86]' },
+                  { label: 'Total Bookings', value: stats?.counts?.bookings ?? bookings.length, sub: 'All guest requests', icon: CalendarCheck2, tone: 'bg-[#f3effa] text-[#7657a1]' },
+                  { label: 'Pending Bookings', value: stats?.counts?.newBookings ?? 0, sub: 'Awaiting your response', icon: Clock3, tone: 'bg-[#fff4e5] text-[#b47b28]' },
+                  { label: 'Total Inquiries', value: stats?.counts?.contacts ?? contacts.length, sub: `${stats?.counts?.newContacts ?? 0} new messages`, icon: Mail, tone: 'bg-[#eaf5ef] text-[#438568]' },
+                  { label: 'Published Blogs', value: posts.length, sub: 'Travel journal articles', icon: FileText, tone: 'bg-[#f8eef0] text-[#a75d71]' },
+                  { label: 'Unread Alerts', value: (stats?.counts?.newBookings ?? 0) + (stats?.counts?.newContacts ?? 0), sub: 'Bookings & messages', icon: Users, tone: 'bg-[#eef1f7] text-[#546a92]' },
                 ].map((card) => (
-                  <div key={card.label} className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold">{card.label}</p>
-                    <p className="mt-2 font-serif text-3xl font-bold text-[#102355]">{card.value}</p>
-                    <p className="mt-1 text-xs text-[#B88346] font-semibold">{card.sub}</p>
+                  <div key={card.label} className="rounded-2xl border border-[#e6edf0] bg-white p-5 shadow-[0_4px_18px_rgba(20,50,70,0.035)] transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(20,50,70,0.08)]">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.13em] text-slate-500 font-bold">{card.label}</p>
+                        <p className="mt-3 font-serif text-3xl font-semibold text-[#17344d]">{card.value}</p>
+                      </div>
+                      <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${card.tone}`}>
+                        <card.icon size={19} />
+                      </span>
+                    </div>
+                    <p className="mt-3 border-t border-slate-100 pt-3 text-[11px] text-slate-500">{card.sub}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-sm border border-slate-200">
-                  <h2 className="font-serif text-xl text-[#102355] mb-4">Recent Booking Requests</h2>
-                  <div className="space-y-3">
-                    {(stats?.recentBookings || []).length === 0 ? (
-                      <p className="text-sm text-slate-500">No bookings recorded yet.</p>
-                    ) : (
-                      stats.recentBookings.map((b) => (
-                        <div key={b.id} className="p-3 bg-slate-50 rounded-sm flex items-center justify-between gap-3 text-sm">
-                          <div>
-                            <p className="font-semibold text-[#102355]">{b.fullName}</p>
-                            <p className="text-xs text-slate-500">{b.tourTitle || 'Custom Journey'} • {b.email}</p>
-                          </div>
-                          <span className={`text-[11px] px-2.5 py-0.5 border rounded-full font-semibold ${STATUS_BADGE[b.status] || ''}`}>
-                            {b.status}
-                          </span>
-                        </div>
-                      ))
-                    )}
+              <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.8fr)] gap-5">
+                <section className="min-w-0 rounded-2xl border border-[#e6edf0] bg-white p-5 sm:p-6 shadow-[0_4px_18px_rgba(20,50,70,0.035)]">
+                  <div className="mb-5 flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="font-serif text-xl text-[#17344d]">Recent Bookings</h2>
+                      <p className="mt-1 text-xs text-slate-500">The latest guest requests across your tours.</p>
+                    </div>
+                    <button type="button" onClick={() => setTab('bookings')} className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-bold text-[#31758b] hover:text-[#17344d]">
+                      View all <ArrowRight size={14} />
+                    </button>
                   </div>
-                </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[560px] text-left text-xs">
+                      <thead>
+                        <tr className="border-y border-slate-100 text-[9px] uppercase tracking-[0.12em] text-slate-400">
+                          <th className="py-3 pr-3 font-bold">Guest</th>
+                          <th className="py-3 px-3 font-bold">Tour / Trip</th>
+                          <th className="py-3 px-3 font-bold">Travel Date</th>
+                          <th className="py-3 pl-3 font-bold">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {((stats?.recentBookings?.length ? stats.recentBookings : bookings).slice(0, 4)).map((booking) => (
+                          <tr key={booking.id} className="hover:bg-[#f8fafb]">
+                            <td className="py-3.5 pr-3">
+                              <p className="font-semibold text-[#17344d]">{booking.fullName}</p>
+                              <p className="mt-1 text-[10px] text-slate-400">{booking.email}</p>
+                            </td>
+                            <td className="px-3 py-3.5 text-slate-600">{booking.tourTitle || 'Custom Journey'}</td>
+                            <td className="px-3 py-3.5 text-slate-500">{booking.travelDate || 'Flexible'}</td>
+                            <td className="py-3.5 pl-3">
+                              <span className={`inline-flex rounded-full border px-2.5 py-1 text-[9px] font-bold ${STATUS_BADGE[booking.status] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                                {booking.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                        {(!stats?.recentBookings?.length && !bookings.length) && (
+                          <tr>
+                            <td colSpan="4" className="py-10 text-center text-sm text-slate-400">No booking requests yet.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
 
-                <div className="bg-white p-6 rounded-sm border border-slate-200">
-                  <h2 className="font-serif text-xl text-[#102355] mb-4">Recent Contact Messages</h2>
-                  <div className="space-y-3">
-                    {(stats?.recentContacts || []).length === 0 ? (
-                      <p className="text-sm text-slate-500">No contact messages yet.</p>
-                    ) : (
-                      stats.recentContacts.map((c) => (
-                        <div key={c.id} className="p-3 bg-slate-50 rounded-sm flex items-center justify-between gap-3 text-sm">
-                          <div>
-                            <p className="font-semibold text-[#102355]">{c.fullName}</p>
-                            <p className="text-xs text-slate-500">{c.subject} • {c.email}</p>
-                          </div>
-                          <span className={`text-[11px] px-2.5 py-0.5 border rounded-full font-semibold ${STATUS_BADGE[c.status] || ''}`}>
-                            {c.status}
-                          </span>
-                        </div>
-                      ))
-                    )}
+                <section className="rounded-2xl border border-[#e6edf0] bg-white p-5 sm:p-6 shadow-[0_4px_18px_rgba(20,50,70,0.035)]">
+                  <div className="mb-5">
+                    <h2 className="font-serif text-xl text-[#17344d]">Quick Actions</h2>
+                    <p className="mt-1 text-xs text-slate-500">Jump straight into your daily tasks.</p>
                   </div>
-                </div>
+                  <div className="space-y-2.5">
+                    {[
+                      { label: 'Manage bookings', helper: 'Review guest requests', icon: CalendarCheck2, target: 'bookings', tone: 'bg-[#eef4f7] text-[#34748a]' },
+                      { label: 'Manage tours', helper: 'Edit itineraries & pricing', icon: Compass, target: 'tours', tone: 'bg-[#fff5e8] text-[#b47b28]' },
+                      { label: 'Update destinations', helper: 'Refresh destination pages', icon: MapPin, target: 'destinations', tone: 'bg-[#edf5f0] text-[#438568]' },
+                      { label: 'Edit travel journal', helper: 'Publish stories & guides', icon: FileText, target: 'blog', tone: 'bg-[#f8eff1] text-[#a75d71]' },
+                    ].map((action) => (
+                      <button
+                        key={action.target}
+                        type="button"
+                        onClick={() => setTab(action.target)}
+                        className="group flex w-full items-center gap-3 rounded-xl border border-slate-100 p-3 text-left hover:border-[#d7e3e8] hover:bg-[#fbfcfc] transition-colors"
+                      >
+                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${action.tone}`}>
+                          <action.icon size={17} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-xs font-bold text-[#17344d]">{action.label}</span>
+                          <span className="mt-1 block text-[10px] text-slate-400">{action.helper}</span>
+                        </span>
+                        <ArrowRight size={15} className="text-slate-300 group-hover:translate-x-0.5 group-hover:text-[#31758b] transition-all" />
+                      </button>
+                    ))}
+                  </div>
+                </section>
               </div>
             </div>
           )}
