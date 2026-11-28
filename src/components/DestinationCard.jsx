@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { translated, useLanguage } from '../i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -14,41 +14,47 @@ export function DestinationCard({ destination }) {
   const tagline = translated(destination, 'tagline', language);
   return (
     <motion.article
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -5 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="group relative rounded-sm overflow-hidden bg-[#0A1638] aspect-[4/5] shadow-md hover:shadow-2xl transition-shadow"
+      className="group h-full overflow-hidden bg-[#fbf9f4] border border-[#08152f]/10 hover:border-[#b48946]/60 hover:shadow-[0_18px_40px_rgba(8,21,47,0.12)] transition-all flex flex-col"
     >
-      <img
-        src={destination.image}
-        alt={name}
-        loading="lazy"
-        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0A1638]/95 via-[#102355]/35 to-transparent" />
-
-      <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-        <span className="text-[11px] uppercase tracking-[0.22em] text-[#D2A058] font-semibold">
+      <Link
+        to={`/tours?destination=${encodeURIComponent(destination.name)}`}
+        className="relative block aspect-[4/3] overflow-hidden bg-[#08152f]"
+        aria-label={`${t('site.exploreEgypt')}: ${name}`}
+      >
+        <img
+          src={destination.image}
+          alt={name}
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08152f]/45 via-transparent to-[#08152f]/10" />
+        <span className="absolute left-4 top-4 px-3 py-1.5 bg-[#08152f]/80 backdrop-blur-sm text-[#e1c58f] text-[9px] uppercase tracking-[0.18em] font-bold">
           {region}
         </span>
-        <h3 className="mt-1 font-serif text-2xl">{name}</h3>
-        <p className="mt-2 text-sm text-white/80 line-clamp-2 leading-relaxed">
+        <span className="absolute right-4 bottom-4 w-10 h-10 border border-white/55 text-white flex items-center justify-center group-hover:bg-[#c9a061] group-hover:border-[#c9a061] group-hover:text-[#08152f] transition-colors">
+          <ArrowUpRight size={17} />
+        </span>
+      </Link>
+
+      <div className="p-5 sm:p-6 flex flex-col flex-1">
+        <div className="section-rule mb-3" />
+        <h3 className="font-serif text-2xl sm:text-[1.7rem] leading-tight text-[#08152f]">
+          {name}
+        </h3>
+        <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-[#9d7437] font-bold">
+          {tagline}
+        </p>
+        <p className="mt-3 text-sm text-[#08152f]/65 line-clamp-2 leading-relaxed flex-1">
           {description || tagline}
         </p>
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {(destination.experiences || []).slice(0, 2).map((exp) => (
-            <span
-              key={exp}
-              className="text-[11px] px-2.5 py-0.5 bg-white/10 backdrop-blur-sm text-[#EFE4D0] rounded-sm"
-            >
-              {exp}
-            </span>
-          ))}
-        </div>
         <Link
           to={`/tours?destination=${encodeURIComponent(destination.name)}`}
-          className="mt-5 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] font-bold text-[#D2A058] hover:text-white transition-colors"
+          className="mt-5 pt-4 border-t border-[#08152f]/10 inline-flex items-center justify-between gap-2 text-[10px] uppercase tracking-[0.16em] font-bold text-[#08152f] hover:text-[#9d7437] transition-colors"
         >
-          {t('site.exploreEgypt')} <ArrowRight size={14} />
+          {t('site.exploreEgypt')}
+          <ArrowUpRight size={16} className="text-[#b48946] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </Link>
       </div>
     </motion.article>
